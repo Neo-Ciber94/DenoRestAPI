@@ -32,7 +32,7 @@ export class UserService implements ApiService<User, string, UserCreate> {
   }
 
   async update(
-    entity: DeepPartial<User> & { id: string }
+    entity: DeepPartial<User> & { id: string },
   ): Promise<User | undefined> {
     if (entity.username) {
       await this.throwIfExist(entity.username);

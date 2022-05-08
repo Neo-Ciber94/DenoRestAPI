@@ -39,7 +39,7 @@ const authRouter = new Router({
 
     ctx.response.body = result;
     ctx.response.status = 200;
-  })
+  });
 
 if (Config.ENVIRONMENT === "development") {
   authRouter.post("/refresh_users_permissions", async (ctx) => {

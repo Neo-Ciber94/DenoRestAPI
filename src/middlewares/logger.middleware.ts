@@ -21,7 +21,8 @@ const loggerMiddleware: Middleware = async (ctx, next) => {
     const pathName = req.url.pathname;
     const agent = req.headers.get("user-agent");
     const statusCode = ctx.response.status;
-    const msg = `[${req.method}] ${statusCode} - ${req.ip} - ${pathName} - ${responseTime}ms - ${agent}`;
+    const msg =
+      `[${req.method}] ${statusCode} - ${req.ip} - ${pathName} - ${responseTime}ms - ${agent}`;
 
     if (statusCode >= 500) {
       logger.error(msg);

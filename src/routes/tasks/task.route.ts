@@ -16,7 +16,7 @@ const taskRouter = new Router({
       const result = await taskApiService.getAll();
       ctx.response.body = result;
       ctx.response.status = 200;
-    }
+    },
   )
   .get(
     "/:id",
@@ -33,7 +33,7 @@ const taskRouter = new Router({
 
       ctx.response.body = result;
       ctx.response.status = 200;
-    }
+    },
   )
   .post(
     "/",
@@ -48,7 +48,7 @@ const taskRouter = new Router({
       ctx.response.body = result;
       ctx.response.status = 201;
       ctx.response.headers.append("Location", `/tasks/${result.id}`);
-    }
+    },
   )
   .put(
     "/toggle/:id",
@@ -65,7 +65,7 @@ const taskRouter = new Router({
 
       ctx.response.body = result;
       ctx.response.status = 200;
-    }
+    },
   )
   .put(
     "/",
@@ -84,7 +84,7 @@ const taskRouter = new Router({
 
       ctx.response.body = result;
       ctx.response.status = 200;
-    }
+    },
   )
   .delete(
     "/:id",
@@ -102,7 +102,7 @@ const taskRouter = new Router({
 
       ctx.response.body = result;
       ctx.response.status = 200;
-    }
+    },
   );
 
 export default taskRouter;

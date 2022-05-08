@@ -46,7 +46,7 @@ export class TaskApiService implements ApiService<Task, string> {
   }
 
   async update(
-    entity: DeepPartial<Task> & { id: string }
+    entity: DeepPartial<Task> & { id: string },
   ): Promise<Task | undefined> {
     const [err, task] = taskUpdateValidator(entity as any);
 

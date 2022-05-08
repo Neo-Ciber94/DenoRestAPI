@@ -1,8 +1,4 @@
-import Schema, {
-  string,
-  array,
-  boolean,
-} from "computed_types";
+import Schema, { array, boolean, string } from "computed_types";
 
 const taskCreateSchema = Schema({
   title: string.test(noBlank),

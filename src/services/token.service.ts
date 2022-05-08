@@ -1,10 +1,4 @@
-import {
-  create,
-  Payload,
-  Header,
-  verify,
-  getNumericDate,
-} from "djwt";
+import { create, getNumericDate, Header, Payload, verify } from "djwt";
 
 export interface GenerateTokenConfig<T> {
   secret: string;
@@ -17,9 +11,9 @@ const ALGORITHM = "HS256";
 export class TokenService<T> {
   generate(config: GenerateTokenConfig<T>): Promise<string> {
     const header: Header = { alg: ALGORITHM };
-    const payload: Payload = { 
-      exp: getNumericDate(config.expiresMs), 
-      ...config.payload 
+    const payload: Payload = {
+      exp: getNumericDate(config.expiresMs),
+      ...config.payload,
     };
     return create(header, payload, config.secret);
   }

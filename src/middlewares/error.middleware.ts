@@ -11,20 +11,17 @@ const errorMiddleware: Middleware = async (ctx, next) => {
     if (err instanceof ApplicationError) {
       ctx.response.status = err.statusCode;
       ctx.response.body = {
-        message:
-          err.message ||
+        message: err.message ||
           getStatusCodeMessage(err.statusCode) ||
           "An error occurred",
       };
-    }
-    // This exceptions can only be exposed in development mode
+    } // This exceptions can only be exposed in development mode
     else if (Config.isDevelopment()) {
       ctx.response.status = err.status || err.statusCode || 500;
       ctx.response.body = {
         message: err.message || "An error occurred",
       };
-    }
-    // Fallback to 500
+    } // Fallback to 500
     else {
       ctx.response.status = 500;
       ctx.response.body = { message: "An error occurred" };

@@ -17,11 +17,13 @@ export interface AuthorizeOptions {
 }
 
 // prettier-ignore
-export type AuthorizeFn = (req: Readonly<OakRquest>) => Promise<boolean> | boolean;
+export type AuthorizeFn = (
+  req: Readonly<OakRquest>,
+) => Promise<boolean> | boolean;
 
 function authorize(
   this: any,
-  options?: AuthorizeOptions | AuthorizeFn
+  options?: AuthorizeOptions | AuthorizeFn,
 ): Middleware {
   return async (ctx, next) => {
     const currentUserService = new CurrentUserService(ctx.request);
@@ -56,13 +58,16 @@ function authorize(
 }
 
 // prettier-ignore
-function optionsToAuthorizeFn(userPayload: UserPayload, options: AuthorizeOptions): AuthorizeFn {
+function optionsToAuthorizeFn(
+  userPayload: UserPayload,
+  options: AuthorizeOptions,
+): AuthorizeFn {
   return (req) => {
     const { permissions, ips } = options;
 
     if (permissions && permissions.length > 0) {
-      const allowedPermissions = getAllowListRegExp(permissions, 'allow');
-      const deniedPermissions = getAllowListRegExp(permissions, 'deny');
+      const allowedPermissions = getAllowListRegExp(permissions, "allow");
+      const deniedPermissions = getAllowListRegExp(permissions, "deny");
 
       let isAllowed = false;
       let isDenied = false;
@@ -87,8 +92,8 @@ function optionsToAuthorizeFn(userPayload: UserPayload, options: AuthorizeOption
     }
 
     if (ips && ips.length > 0) {
-      const allowedIps = getAllowListRegExp(ips, 'allow');
-      const deniedIps = getAllowListRegExp(ips, 'deny');
+      const allowedIps = getAllowListRegExp(ips, "allow");
+      const deniedIps = getAllowListRegExp(ips, "deny");
 
       const isAllowed = allowedIps.some((e) => e.test(req.ip));
       if (!isAllowed) {
@@ -107,7 +112,7 @@ function optionsToAuthorizeFn(userPayload: UserPayload, options: AuthorizeOption
 
 function getAllowListRegExp(
   values: Pattern[] | AllowList[],
-  kind: keyof AllowList
+  kind: keyof AllowList,
 ): RegExp[] {
   return values
     .flatMap(patternToAllowList)

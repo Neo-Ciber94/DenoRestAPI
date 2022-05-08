@@ -1,5 +1,5 @@
 export default function getStatusCodeMessage(
-  statusCode: number
+  statusCode: number,
 ): string | null {
   switch (statusCode) {
     case 400:

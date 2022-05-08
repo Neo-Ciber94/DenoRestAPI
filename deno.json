@@ -1,6 +1,7 @@
 {
   "tasks": {
     "run": "deno run --allow-net --allow-env --allow-read --allow-write --import-map=./import-map.json --watch src/app.ts",
+    "test": "deno test --allow-net",
     "docker:build": "docker build -t deno-restapi .",
     "docker:run": "docker run --name deno-restapi -dp 8080:8080 --net bridge --restart=always --env-file=.env deno-restapi",
     "docker:stop": "docker stop deno-restapi",

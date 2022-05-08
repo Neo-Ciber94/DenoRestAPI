@@ -68,7 +68,7 @@ export class AuthService {
 
     const isValid = await this.hasher.verify(
       userLogin.password,
-      user.passwordHash
+      user.passwordHash,
     );
 
     if (!isValid) {
@@ -144,7 +144,7 @@ export class AuthService {
 
     const isValid = await this.hasher.verify(
       userChangePassword.oldPassword,
-      user.passwordHash
+      user.passwordHash,
     );
 
     if (!isValid) {

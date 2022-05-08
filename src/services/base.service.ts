@@ -11,7 +11,7 @@ export interface ApiService<
   TKey = number,
   TCreate = T,
   TUpdate = T,
-  TDelete = TKey
+  TDelete = TKey,
 > extends ReadOnlyApiService<T, TKey> {
   create(entity: DeepPartial<TCreate>): Promise<T>;
   update(entity: DeepPartial<TUpdate> & { id: TKey }): Promise<T | undefined>;

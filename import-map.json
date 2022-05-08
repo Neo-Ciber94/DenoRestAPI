@@ -3,6 +3,7 @@
     "std/fmt/colors": "https://deno.land/std@0.95.0/fmt/colors.ts",
     "std/path": "https://deno.land/std@0.138.0/path/mod.ts",
     "std/log": "https://deno.land/std@0.138.0/log/mod.ts",
+    "std/assert": "https://deno.land/std@0.138.0/testing/asserts.ts",
     "oak": "https://deno.land/x/oak@v10.5.1/mod.ts",
     "bcrypt": "https://deno.land/x/bcrypt@v0.3.0/mod.ts",
     "redis": "https://deno.land/x/redis@v0.25.5/mod.ts",

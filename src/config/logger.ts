@@ -1,11 +1,6 @@
 import * as log from "std/log";
 import { dirname } from "std/path";
-import {
-  blue,
-  bold,
-  red,
-  yellow,
-} from "std/fmt/colors";
+import { blue, bold, red, yellow } from "std/fmt/colors";
 
 const lOGS_PATH = "./logs/logs.txt";
 
@@ -20,7 +15,7 @@ await log.setup({
       filename: lOGS_PATH,
       maxBackupCount: 12,
       maxBytes: 800_000,
-      mode: 'a'
+      mode: "a",
     }),
   },
   loggers: {
