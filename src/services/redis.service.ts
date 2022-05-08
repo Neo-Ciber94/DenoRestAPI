@@ -21,6 +21,10 @@ export class RedisApiService<T extends Entity<string>>
 {
   constructor(readonly baseKey: string) {}
 
+  get client() {
+    return redis;
+  }
+
   private keyFor(key: string): string {
     return `${this.baseKey}:${key}`;
   }
@@ -73,7 +77,7 @@ export class RedisApiService<T extends Entity<string>>
     if (result !== "OK") {
       return undefined;
     }
-    
+
     return newEntity;
   }
 

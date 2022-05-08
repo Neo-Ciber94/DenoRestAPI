@@ -6,10 +6,7 @@ export interface User extends Entity<string>, Auditable {
   passwordHash: string;
 }
 
-export type UserProfile = Pick<
-  User,
-  "username" | "id" | "creationDate" | "lastUpdateDate"
->;
+export type UserProfile = Pick<User, "username" | "id">;
 
 export interface UserCreate {
   username: string;

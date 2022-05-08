@@ -1,6 +1,6 @@
 import { ApiService, ReadOnlyApiService } from "../../services/base.service.ts";
 import { RedisApiService } from "../../services/redis.service.ts";
-import { DeepPartial } from "../../types/deep-partial";
+import { DeepPartial } from "../../types/deep-partial.ts";
 import { User } from "../auth/user.model.ts";
 
 export class UserService implements ApiService<User, string> {
@@ -14,13 +14,20 @@ export class UserService implements ApiService<User, string> {
     return this.service.getAll();
   }
 
+  async getByUserName(username: string): Promise<User | undefined> {
+    const users = await this.getAll();
+    return users.find((u) => u.username == username);
+  }
+
   create(entity: DeepPartial<User>): Promise<User> {
+    entity.creationDate = new Date();
     return this.service.create(entity);
   }
 
   update(
     entity: DeepPartial<User> & { id: string }
   ): Promise<User | undefined> {
+    entity.lastUpdateDate = new Date();
     return this.service.update(entity);
   }
 
