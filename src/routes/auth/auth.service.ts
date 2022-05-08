@@ -1,3 +1,5 @@
+import { PasswordHasher } from "../../services/password-hasher.service.ts";
+import { UserService } from "../users/user.service.ts";
 import {
   UserChangePassword,
   UserCreate,
@@ -7,15 +9,18 @@ import {
 } from "./user.model.ts";
 
 export class AuthService {
+  private readonly userService = new UserService();
+  private readonly hasher = new PasswordHasher();
+
   createUser(userCreate: UserCreate): Promise<UserProfile> {
     throw new Error("Method not implemented.");
   }
 
-  login(userLogin: UserLogin): Promise<UserToken> {
+  login(userLogin: UserLogin, response: Response): Promise<UserToken> {
     throw new Error("Method not implemented.");
   }
 
-  logout(): Promise<void> {
+  logout(response: Response): Promise<void> {
     throw new Error("Method not implemented.");
   }
 

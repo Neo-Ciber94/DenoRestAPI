@@ -1,15 +1,30 @@
-import { ReadOnlyApiService } from "../../services/base.service.ts";
+import { ApiService, ReadOnlyApiService } from "../../services/base.service.ts";
 import { RedisApiService } from "../../services/redis.service.ts";
+import { DeepPartial } from "../../types/deep-partial";
 import { User } from "../auth/user.model.ts";
 
-export class UserService implements ReadOnlyApiService<User, string> {
+export class UserService implements ApiService<User, string> {
   private readonly service = new RedisApiService<User>("users");
 
   get(key: string): Promise<User | undefined> {
     return this.service.get(key);
   }
-  
+
   getAll(): Promise<User[]> {
     return this.service.getAll();
+  }
+
+  create(entity: DeepPartial<User>): Promise<User> {
+    return this.service.create(entity);
+  }
+
+  update(
+    entity: DeepPartial<User> & { id: string }
+  ): Promise<User | undefined> {
+    return this.service.update(entity);
+  }
+
+  delete(entity: string): Promise<User | undefined> {
+    return this.service.delete(entity);
   }
 }
