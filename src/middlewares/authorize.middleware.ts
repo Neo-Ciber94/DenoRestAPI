@@ -7,20 +7,22 @@ import {
 export type Pattern = string | RegExp;
 
 export interface AllowList {
-  allow: Pattern[];
-  deny: Pattern[];
+  allow?: Pattern[];
+  deny?: Pattern[];
 }
 
 export interface AuthorizeOptions {
-  roles?: AllowList[];
-  ips?: AllowList[];
+  permissions?: Pattern[] | AllowList[];
+  ips?: Pattern[] | AllowList[];
 }
 
-export type AuthorizeFn = (
-  req: Readonly<OakRquest>
-) => Promise<boolean> | boolean;
+// prettier-ignore
+export type AuthorizeFn = (req: Readonly<OakRquest>) => Promise<boolean> | boolean;
 
-function authorize(options?: AuthorizeOptions | AuthorizeFn): Middleware {
+function authorize(
+  this: any,
+  options?: AuthorizeOptions | AuthorizeFn
+): Middleware {
   return async (ctx, next) => {
     const currentUserService = new CurrentUserService(ctx.request);
     const userPayload = await currentUserService.getUserPayload();
@@ -53,29 +55,27 @@ function authorize(options?: AuthorizeOptions | AuthorizeFn): Middleware {
   };
 }
 
-function optionsToAuthorizeFn(
-  userPayload: UserPayload,
-  options: AuthorizeOptions
-): AuthorizeFn {
+// prettier-ignore
+function optionsToAuthorizeFn(userPayload: UserPayload, options: AuthorizeOptions): AuthorizeFn {
   return (req) => {
-    const { roles, ips } = options;
+    const { permissions, ips } = options;
 
-    if (roles && roles.length > 0) {
-      const allowedRoles = roles.flatMap((e) => e.allow).map(patternToRegex);
-      const deniedRoles = roles.flatMap((e) => e.deny).map(patternToRegex);
+    if (permissions && permissions.length > 0) {
+      const allowedPermissions = getAllowListRegExp(permissions, 'allow');
+      const deniedPermissions = getAllowListRegExp(permissions, 'deny');
 
       let isAllowed = false;
       let isDenied = false;
 
-      for (const role of userPayload.roles) {
-        if (allowedRoles.some((e) => e.test(role))) {
+      for (const permission of userPayload.permissions) {
+        if (allowedPermissions.some((e) => e.test(permission))) {
           isAllowed = true;
           break;
         }
       }
 
-      for (const role of userPayload.roles) {
-        if (deniedRoles.some((e) => e.test(role))) {
+      for (const permission of userPayload.permissions) {
+        if (deniedPermissions.some((e) => e.test(permission))) {
           isDenied = true;
           break;
         }
@@ -87,8 +87,8 @@ function optionsToAuthorizeFn(
     }
 
     if (ips && ips.length > 0) {
-      const allowedIps = ips.flatMap((e) => e.allow).map(patternToRegex);
-      const deniedIps = ips.flatMap((e) => e.deny).map(patternToRegex);
+      const allowedIps = getAllowListRegExp(ips, 'allow');
+      const deniedIps = getAllowListRegExp(ips, 'deny');
 
       const isAllowed = allowedIps.some((e) => e.test(req.ip));
       if (!isAllowed) {
@@ -103,6 +103,34 @@ function optionsToAuthorizeFn(
 
     return true;
   };
+}
+
+function getAllowListRegExp(
+  values: Pattern[] | AllowList[],
+  kind: keyof AllowList
+): RegExp[] {
+  return values
+    .flatMap(patternToAllowList)
+    .filter((e) => e != null)
+    .flatMap((e) => e[kind] as Pattern[])
+    .filter((e) => e != null)
+    .map(patternToRegex);
+}
+
+function patternToAllowList(value: Pattern | AllowList): AllowList {
+  if (typeof value === "string") {
+    return {
+      allow: [value],
+    };
+  }
+
+  if (value instanceof RegExp) {
+    return {
+      allow: [value],
+    };
+  }
+
+  return value;
 }
 
 function patternToRegex(pattern: Pattern): RegExp {

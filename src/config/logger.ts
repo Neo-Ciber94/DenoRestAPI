@@ -16,10 +16,11 @@ await log.setup({
     console: new log.handlers.ConsoleHandler("DEBUG", {
       formatter: consoleFormatter,
     }),
-    file: new log.handlers.RotatingFileHandler("WARNING", {
+    file: new log.handlers.RotatingFileHandler("DEBUG", {
       filename: lOGS_PATH,
       maxBackupCount: 12,
-      maxBytes: 800000,
+      maxBytes: 800_000,
+      mode: 'a'
     }),
   },
   loggers: {

@@ -86,7 +86,7 @@ export class RedisApiService<T extends Entity<string>>
     }
 
     const result = await redisInstance.set(
-      entity.id,
+      this.keyFor(entity.id),
       JSON.stringify(newEntity)
     );
 

@@ -18,6 +18,7 @@ import {
   userCreateValidator,
   userLoginValidator,
 } from "./auth.validator.ts";
+import { getAllPermissions } from "./permissions.ts";
 
 const ERROR_INVALID_CREDENTIALS = "Invalid username or password";
 
@@ -48,6 +49,7 @@ export class AuthService {
     return {
       id: result.id,
       username: result.username,
+      permissions: result.permissions,
     };
   }
 
@@ -80,7 +82,7 @@ export class AuthService {
       payload: {
         id: user.id,
         username: user.username,
-        roles: [],
+        permissions: getAllPermissions(),
       },
     });
 
@@ -123,6 +125,7 @@ export class AuthService {
     return {
       id: user.id,
       username: user.username,
+      permissions: user.permissions,
     };
   }
 
@@ -151,5 +154,20 @@ export class AuthService {
     const passwordHash = await this.hasher.hash(userChangePassword.newPassword);
     user.passwordHash = passwordHash;
     await this.userService.update(user);
+  }
+
+  async refreshUsersPermissions() {
+    const users = await this.userService.getAll();
+
+    for (const user of users) {
+      // Only update admin accounts
+      if (user.parentUserId == null) {
+        const permissions = getAllPermissions();
+        await this.userService.update({
+          id: user.id,
+          permissions,
+        });
+      }
+    }
   }
 }

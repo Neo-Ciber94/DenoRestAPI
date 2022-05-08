@@ -3,11 +3,12 @@ import { TokenService } from "../../services/token.service.ts";
 import { User } from "./auth.model.ts";
 import { UserService } from "./user.service.ts";
 import { Request as OakRequest } from "oak";
+import { Permission } from "./permissions.ts";
 
 export interface UserPayload {
   id: string;
   username: string;
-  roles: string[];
+  permissions: Permission[];
 }
 
 export class CurrentUserService {
@@ -26,9 +27,9 @@ export class CurrentUserService {
     return payload?.id;
   }
 
-  async getRoles(): Promise<string[]> {
+  async getPermissions(): Promise<string[]> {
     const payload = await this.getUserPayload();
-    return payload?.roles ?? [];
+    return payload?.permissions ?? [];
   }
 
   async getToken(): Promise<string | undefined> {
@@ -46,7 +47,7 @@ export class CurrentUserService {
     return {
       id: payload.id,
       username: payload.username,
-      roles: payload.roles,
+      permissions: payload.permissions,
     };
   }
 

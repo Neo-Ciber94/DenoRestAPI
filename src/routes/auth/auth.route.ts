@@ -1,6 +1,7 @@
 import { Router } from "oak";
 import { AuthService } from "./auth.service.ts";
 import authorize from "../../middlewares/authorize.middleware.ts";
+import { Config } from "../../config/mod.ts";
 
 const authRouter = new Router({
   prefix: "/auth",
@@ -38,6 +39,15 @@ const authRouter = new Router({
 
     ctx.response.body = result;
     ctx.response.status = 200;
+  })
+
+if (Config.ENVIRONMENT === "development") {
+  authRouter.post("/refresh_users_permissions", async (ctx) => {
+    const authService = new AuthService(ctx.request);
+    await authService.refreshUsersPermissions();
+
+    ctx.response.status = 200;
   });
+}
 
 export default authRouter;

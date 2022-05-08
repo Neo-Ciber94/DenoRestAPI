@@ -3,11 +3,16 @@ import { Assert } from "../utils/assert.ts";
 
 export module Config {
   export const ENVIRONMENT = getEnvOrThrow("ENVIRONMENT");
-  export const CONSOLE_LOG_ERRORS = getEnvOrThrow("CONSOLE_LOG_ERRORS") === "true";
+  export const CONSOLE_LOG_ERRORS =
+    getEnvOrThrow("CONSOLE_LOG_ERRORS") === "true";
   export const REDIS_HOST = getEnvOrThrow("REDIS_HOST");
   export const REDIS_PORT = getEnvOrThrow("REDIS_PORT");
   export const TOKEN_SECRET = getEnvOrThrow("TOKEN_SECRET");
   export const TOKEN_EXPIRES_MS = Number(getEnvOrThrow("TOKEN_EXPIRES_MS"));
+
+  export function isDevelopment(): boolean {
+    return ENVIRONMENT === "development";
+  }
 }
 
 function getEnvOrThrow(key: string): string {

@@ -49,7 +49,7 @@ export class UserService implements ApiService<User, string, UserCreate> {
   private async throwIfExist(username: string): Promise<void> {
     const user = await this.getByUserName(username);
     if (user != null) {
-      ApplicationError.throwBadRequest(`User ${username} already exists`);
+      ApplicationError.throwBadRequest(`Username '${username}' already exists`);
     }
   }
 }
