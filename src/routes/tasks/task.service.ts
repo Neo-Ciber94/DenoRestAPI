@@ -2,28 +2,67 @@ import { Task } from "./task.model.ts";
 import { ApiService } from "../../services/base.service.ts";
 import { DeepPartial } from "../../types/deep-partial.ts";
 import { RedisApiService } from "../../services/redis.service.ts";
+import { ApplicationError } from "../../errors/app.error.ts";
+import { taskCreateValidator, taskUpdateValidator } from "./task.validator.ts";
+import { Request as OakRequest } from "https://deno.land/x/oak@v10.5.1/request.ts";
+import { CurrentUserService } from "../auth/current-user.service.ts";
 
 export class TaskApiService implements ApiService<Task, string> {
   private readonly service = new RedisApiService<Task>("task");
+  private readonly currentUserService: CurrentUserService;
 
-  get(key: string): Promise<Task | undefined> {
-    return this.service.get(key);
+  constructor(request: OakRequest) {
+    this.currentUserService = new CurrentUserService(request);
   }
 
-  getAll(): Promise<Task[]> {
-    return this.service.getAll();
+  async get(key: string): Promise<Task | undefined> {
+    const result = await this.service.get(key);
+    const userId = await this.currentUserService.getId();
+    return result && result.createdByUser === userId ? result : undefined;
   }
 
-  create(entity: DeepPartial<Task>): Promise<Task> {
-    entity.completed = false;
-    entity.creationDate = new Date();
-    return this.service.create(entity);
+  async getAll(): Promise<Task[]> {
+    const result = await this.service.getAll();
+    const userId = await this.currentUserService.getId();
+    return result.filter((task) => task.createdByUser === userId);
   }
 
-  update(
+  async create(entity: DeepPartial<Task>): Promise<Task> {
+    const [err, task] = taskCreateValidator(entity as any);
+
+    if (err) {
+      ApplicationError.throwBadRequest(err.message);
+    }
+
+    const userId = await this.currentUserService.getId();
+    const newEntity: DeepPartial<Task> = {
+      ...task!,
+      completed: false,
+      creationDate: new Date(),
+      createdByUser: userId,
+    };
+
+    return this.service.create(newEntity);
+  }
+
+  async update(
     entity: DeepPartial<Task> & { id: string }
   ): Promise<Task | undefined> {
-    return this.service.update(entity);
+    const [err, task] = taskUpdateValidator(entity as any);
+
+    if (err) {
+      ApplicationError.throwBadRequest(err.message);
+    }
+
+    const userId = await this.currentUserService.getId();
+    const newEntity: DeepPartial<Task> & { id: string } = {
+      ...task!,
+      completed: false,
+      lastUpdateDate: new Date(),
+      lastUpdatedByUser: userId,
+    };
+
+    return this.service.update(newEntity);
   }
 
   async toggle(id: string): Promise<Task | undefined> {

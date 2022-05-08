@@ -2,6 +2,7 @@ import { Config } from "../../config/mod.ts";
 import { TokenService } from "../../services/token.service.ts";
 import { User } from "./user.model.ts";
 import { UserService } from "./user.service.ts";
+import { Request as OakRequest } from "https://deno.land/x/oak@v10.5.1/request.ts";
 
 export interface UserPayload {
   id: string;
@@ -12,7 +13,7 @@ export class CurrentUserService {
   private readonly tokenService = new TokenService<UserPayload>();
   private readonly userService = new UserService();
 
-  constructor(private request: Request) {}
+  constructor(private request: OakRequest) {}
 
   async loadUser(): Promise<User | undefined> {
     const payload = await this.getUserPayload();
@@ -22,6 +23,11 @@ export class CurrentUserService {
   async getUserPayload(): Promise<UserPayload | undefined> {
     const payload = await this.getUserPayloadAndUser();
     return payload ? { id: payload.id, username: payload.username } : undefined;
+  }
+
+  async getId(): Promise<string | undefined> {
+    const payload = await this.getUserPayloadAndUser();
+    return payload?.id;
   }
 
   async getToken(): Promise<string | undefined> {

@@ -3,6 +3,7 @@ import { Application } from "https://deno.land/x/oak@v10.5.1/mod.ts";
 import loggerMiddleware from "./middlewares/logger.middleware.ts";
 import errorMiddleware from "./middlewares/error.middleware.ts";
 import taskRouter from "./routes/tasks/task.route.ts";
+import authRouter from "./routes/auth/auth.route.ts";
 
 await log.setup({
   handlers: {
@@ -26,6 +27,12 @@ const app = new Application();
 
 app.use(errorMiddleware);
 app.use(loggerMiddleware);
+
+// auth
+app.use(authRouter.routes());
+app.use(authRouter.allowedMethods());
+
+// tasks
 app.use(taskRouter.routes());
 app.use(taskRouter.allowedMethods());
 

@@ -12,6 +12,7 @@ import {
 } from "./user.model.ts";
 import { Config } from "../../config/mod.ts";
 import { CurrentUserService, UserPayload } from "./current-user.service.ts";
+import { Request as OakRequest } from "https://deno.land/x/oak@v10.5.1/request.ts";
 
 const ERROR_INVALID_CREDENTIALS = "Invalid user or password";
 
@@ -22,7 +23,7 @@ export class AuthService {
   private readonly loggedUserService = new LoggedUserService();
   private readonly currentUserService: CurrentUserService;
 
-  constructor(request: Request) {
+  constructor(request: OakRequest) {
     this.currentUserService = new CurrentUserService(request);
   }
 
@@ -68,7 +69,7 @@ export class AuthService {
     await this.loggedUserService.add(user.id, token, expirationMs);
 
     return {
-      accessToken: token,
+      token: token,
       expiration: new Date(Date.now() + expirationMs),
     };
   }

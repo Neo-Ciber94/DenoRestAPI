@@ -19,7 +19,7 @@ export interface UserLogin {
 }
 
 export interface UserToken {
-  accessToken: string;
+  token: string;
   expiration: Date;
 }
 
