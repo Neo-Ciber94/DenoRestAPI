@@ -4,22 +4,33 @@ import { Middleware } from "https://deno.land/x/oak@v10.5.1/middleware.ts";
 const logger = log.getLogger();
 
 const loggerMiddleware: Middleware = async (ctx, next) => {
-  const startTime = Date.now();
-  await next();
-  const endTime = Date.now();
+  let error: any | null;
+  let responseTime = 0;
 
-  const responseTime = endTime - startTime;
-  const req = ctx.request;
-  const agent = req.headers.get("user-agent");
+  try {
+    const startTime = Date.now();
+    await next();
+    const endTime = Date.now();
 
-  logger.info(
-    "{method} {url}: {ip} {agent} {time}",
-    req.ip,
-    req.method,
-    req.url,
-    agent,
-    responseTime
-  );
+    responseTime = endTime - startTime;
+  } catch (e) {
+    error = e;
+    throw e;
+  } finally {
+    const req = ctx.request;
+    const pathName = req.url.pathname;
+    const agent = req.headers.get("user-agent");
+    const statusCode = ctx.response.status;
+    const msg = `[${req.method}] ${statusCode} - ${req.ip} - ${pathName} - ${responseTime}ms - ${agent}`;
+
+    if (statusCode >= 500) {
+      logger.error(msg);
+    } else if (statusCode >= 400) {
+      logger.warning(msg);
+    } else {
+      logger.info(msg);
+    }
+  }
 };
 
 export default loggerMiddleware;

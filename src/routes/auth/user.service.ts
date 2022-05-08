@@ -2,7 +2,7 @@ import { ApplicationError } from "../../errors/app.error.ts";
 import { ApiService } from "../../services/base.service.ts";
 import { RedisApiService } from "../../services/redis.service.ts";
 import { DeepPartial } from "../../types/deep-partial.ts";
-import { User, UserCreate } from "../auth/user.model.ts";
+import { User, UserCreate } from "./auth.model.ts";
 
 export class UserService implements ApiService<User, string, UserCreate> {
   private readonly service = new RedisApiService<User>("users");

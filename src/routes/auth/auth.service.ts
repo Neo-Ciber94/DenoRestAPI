@@ -9,10 +9,15 @@ import {
   UserLogin,
   UserProfile,
   UserToken,
-} from "./user.model.ts";
+} from "./auth.model.ts";
 import { Config } from "../../config/mod.ts";
 import { CurrentUserService, UserPayload } from "./current-user.service.ts";
 import { Request as OakRequest } from "https://deno.land/x/oak@v10.5.1/request.ts";
+import {
+  userChangePasswordValidator,
+  userCreateValidator,
+  userLoginValidator,
+} from "./auth.validator.ts";
 
 const ERROR_INVALID_CREDENTIALS = "Invalid user or password";
 
@@ -28,6 +33,12 @@ export class AuthService {
   }
 
   async createUser(userCreate: UserCreate): Promise<UserProfile> {
+    const [error, _] = userCreateValidator(userCreate);
+    
+    if (error) {
+      ApplicationError.throwBadRequest(error.message);
+    }
+
     const passwordHash = await this.hasher.hash(userCreate.password);
     const result = await this.userService.create({
       username: userCreate.username,
@@ -41,6 +52,12 @@ export class AuthService {
   }
 
   async login(userLogin: UserLogin): Promise<UserToken> {
+    const [error, _] = userLoginValidator(userLogin);
+
+    if (error) {
+      ApplicationError.throwBadRequest(error.message);
+    }
+
     const user = await this.userService.getByUserName(userLogin.username);
 
     if (user == null) {
@@ -107,6 +124,12 @@ export class AuthService {
   }
 
   async changePassword(userChangePassword: UserChangePassword): Promise<void> {
+    const [error, _] = userChangePasswordValidator(userChangePassword);
+
+    if (error) {
+      ApplicationError.throwBadRequest(error.message);
+    }
+
     const user = await this.currentUserService.loadUser();
 
     if (user == null) {

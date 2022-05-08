@@ -1,6 +1,6 @@
 import { Config } from "../../config/mod.ts";
 import { TokenService } from "../../services/token.service.ts";
-import { User } from "./user.model.ts";
+import { User } from "./auth.model.ts";
 import { UserService } from "./user.service.ts";
 import { Request as OakRequest } from "https://deno.land/x/oak@v10.5.1/request.ts";
 
