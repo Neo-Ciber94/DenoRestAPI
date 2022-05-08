@@ -66,7 +66,7 @@ export class AuthService {
       ApplicationError.throwBadRequest(ERROR_INVALID_CREDENTIALS);
     }
 
-    const isValid = await this.hasher.verity(
+    const isValid = await this.hasher.verify(
       userLogin.password,
       user.passwordHash
     );
@@ -142,7 +142,7 @@ export class AuthService {
       ApplicationError.throwUnauthorized();
     }
 
-    const isValid = await this.hasher.verity(
+    const isValid = await this.hasher.verify(
       userChangePassword.oldPassword,
       user.passwordHash
     );

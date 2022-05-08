@@ -5,7 +5,7 @@ export class PasswordHasher {
     return bcrypt.hash(passwordText);
   }
 
-  verity(passwordText: string, passwordHash: string): Promise<boolean> {
+  verify(passwordText: string, passwordHash: string): Promise<boolean> {
     return bcrypt.compare(passwordText, passwordHash);
   }
 }
