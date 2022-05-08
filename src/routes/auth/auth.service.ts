@@ -1,6 +1,8 @@
 import { PasswordHasher } from "../../services/password-hasher.service.ts";
+import { TokenService } from "../../services/token.service.ts";
 import { ApplicationError } from "../../errors/app.error.ts";
-import { UserService } from "../users/user.service.ts";
+import { LoggedUserService } from "./logged-user.service.ts";
+import { UserService } from "./user.service.ts";
 import {
   UserChangePassword,
   UserCreate,
@@ -8,16 +10,27 @@ import {
   UserProfile,
   UserToken,
 } from "./user.model.ts";
+import { Config } from "../../config/mod.ts";
+import { CurrentUserService, UserPayload } from "./current-user.service.ts";
+
+const ERROR_INVALID_CREDENTIALS = "Invalid user or password";
 
 export class AuthService {
   private readonly userService = new UserService();
   private readonly hasher = new PasswordHasher();
+  private readonly tokenService = new TokenService<UserPayload>();
+  private readonly loggedUserService = new LoggedUserService();
+  private readonly currentUserService: CurrentUserService;
+
+  constructor(request: Request) {
+    this.currentUserService = new CurrentUserService(request);
+  }
 
   async createUser(userCreate: UserCreate): Promise<UserProfile> {
     const passwordHash = await this.hasher.hash(userCreate.password);
     const result = await this.userService.create({
       username: userCreate.username,
-      passwordHash,
+      password: passwordHash,
     });
 
     return {
@@ -27,11 +40,10 @@ export class AuthService {
   }
 
   async login(userLogin: UserLogin): Promise<UserToken> {
-    const ERROR_MESSAGE = "Invalid username or password";
     const user = await this.userService.getByUserName(userLogin.username);
 
     if (user == null) {
-      ApplicationError.throwBadRequest(ERROR_MESSAGE);
+      ApplicationError.throwBadRequest(ERROR_INVALID_CREDENTIALS);
     }
 
     const isValid = await this.hasher.verity(
@@ -40,19 +52,77 @@ export class AuthService {
     );
 
     if (!isValid) {
-      ApplicationError.throwBadRequest(ERROR_MESSAGE);
+      ApplicationError.throwBadRequest(ERROR_INVALID_CREDENTIALS);
+    }
+
+    const expirationMs = Config.TOKEN_EXPIRES_MS;
+    const token = await this.tokenService.generate({
+      expiresMs: expirationMs,
+      secret: Config.TOKEN_SECRET,
+      payload: {
+        id: user.id,
+        username: user.username,
+      },
+    });
+
+    await this.loggedUserService.add(user.id, token, expirationMs);
+
+    return {
+      accessToken: token,
+      expiration: new Date(Date.now() + expirationMs),
+    };
+  }
+
+  async logout(): Promise<void> {
+    const userPayload = await this.currentUserService.getUserPayloadAndUser();
+
+    if (userPayload == null) {
+      ApplicationError.throwUnauthorized();
+    }
+
+    // prettier-ignore
+    if (!(await this.loggedUserService.remove(userPayload.id, userPayload.token))) {
+      ApplicationError.throwUnauthorized();
     }
   }
 
-  logout(response: Response): Promise<void> {
-    throw new Error("Method not implemented.");
+  async me(): Promise<UserProfile> {
+    const userPayload = await this.currentUserService.getUserPayloadAndUser();
+
+    if (userPayload == null) {
+      ApplicationError.throwUnauthorized();
+    }
+
+    const user = await this.userService.get(userPayload.id);
+
+    if (user == null) {
+      ApplicationError.throwNotFound("User not found");
+    }
+
+    return {
+      id: user.id,
+      username: user.username,
+    };
   }
 
-  me(): Promise<UserProfile> {
-    throw new Error("Method not implemented.");
-  }
+  async changePassword(userChangePassword: UserChangePassword): Promise<void> {
+    const user = await this.currentUserService.loadUser();
 
-  changePassword(userChangePassword: UserChangePassword): Promise<void> {
-    throw new Error("Method not implemented.");
+    if (user == null) {
+      ApplicationError.throwUnauthorized();
+    }
+
+    const isValid = await this.hasher.verity(
+      userChangePassword.oldPassword,
+      user.passwordHash
+    );
+
+    if (!isValid) {
+      ApplicationError.throwBadRequest(ERROR_INVALID_CREDENTIALS);
+    }
+
+    const passwordHash = await this.hasher.hash(userChangePassword.newPassword);
+    user.passwordHash = passwordHash;
+    await this.userService.update(user);
   }
 }

@@ -1,19 +1,13 @@
-import "https://deno.land/x/dotenv@v3.2.0/load.ts";
 import { connect } from "https://deno.land/x/redis@v0.25.5/mod.ts";
 import { DeepPartial } from "../types/deep-partial.ts";
-import { Assert } from "../utils/assert.ts";
 import { ApiService } from "./base.service.ts";
 import { Entity } from "../types/entity.ts";
+import { ApplicationError } from "../errors/app.error.ts";
+import { Config } from "../config/mod.ts";
 
-const REDIS_HOST = Deno.env.get("REDIS_HOST");
-const REDIS_PORT = Deno.env.get("REDIS_PORT");
-
-Assert.nonNull(REDIS_HOST, "REDIS_HOST is not defined");
-Assert.nonNull(REDIS_PORT, "REDIS_PORT is not defined");
-
-const redis = await connect({
-  hostname: REDIS_HOST,
-  port: Number(REDIS_PORT),
+export const redisInstance = await connect({
+  hostname: Config.REDIS_HOST,
+  port: Config.REDIS_PORT,
 });
 
 export class RedisApiService<T extends Entity<string>>
@@ -22,7 +16,7 @@ export class RedisApiService<T extends Entity<string>>
   constructor(readonly baseKey: string) {}
 
   get client() {
-    return redis;
+    return redisInstance;
   }
 
   private keyFor(key: string): string {
@@ -30,7 +24,7 @@ export class RedisApiService<T extends Entity<string>>
   }
 
   async get(key: string): Promise<T | undefined> {
-    const result = await redis.get(this.keyFor(key));
+    const result = await redisInstance.get(this.keyFor(key));
     if (result == null) {
       return undefined;
     }
@@ -39,14 +33,14 @@ export class RedisApiService<T extends Entity<string>>
   }
 
   async getAll(): Promise<T[]> {
-    const [_, ids] = await redis.scan(0, {
+    const [_, ids] = await redisInstance.scan(0, {
       pattern: `${this.baseKey}:*`,
     });
 
     const result: T[] = [];
 
     for (const id of ids) {
-      const json = await redis.get(id);
+      const json = await redisInstance.get(id);
       if (json != null) {
         const value = JSON.parse(json) as T;
         result.push(value);
@@ -59,7 +53,15 @@ export class RedisApiService<T extends Entity<string>>
   async create(entity: DeepPartial<T>): Promise<T> {
     const id = crypto.randomUUID();
     const newEntity: T = { id, ...entity } as T;
-    const result = await redis.set(this.keyFor(id), JSON.stringify(newEntity));
+    const result = await redisInstance.set(
+      this.keyFor(id),
+      JSON.stringify(newEntity)
+    );
+
+    if (result !== "OK") {
+      ApplicationError.internalServerError();
+    }
+
     return newEntity;
   }
 
@@ -72,7 +74,10 @@ export class RedisApiService<T extends Entity<string>>
     }
 
     const newEntity = { ...entity, ...entityToUpdate } as T;
-    const result = await redis.set(entity.id, JSON.stringify(newEntity));
+    const result = await redisInstance.set(
+      entity.id,
+      JSON.stringify(newEntity)
+    );
 
     if (result !== "OK") {
       return undefined;
@@ -87,7 +92,7 @@ export class RedisApiService<T extends Entity<string>>
       return undefined;
     }
 
-    const result = await redis.del(this.keyFor(entity));
+    const result = await redisInstance.del(this.keyFor(entity));
     if (result !== 1) {
       return undefined;
     }

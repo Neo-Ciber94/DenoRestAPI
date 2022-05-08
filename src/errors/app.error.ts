@@ -7,7 +7,7 @@ export class ApplicationError extends Error {
     throw new ApplicationError(400, message);
   }
 
-  static throwUnathorized(message?: string): never {
+  static throwUnauthorized(message?: string): never {
     throw new ApplicationError(401, message);
   }
 
@@ -17,5 +17,9 @@ export class ApplicationError extends Error {
 
   static throwNotFound(message?: string): never {
     throw new ApplicationError(404, message);
+  }
+
+  static internalServerError(message?: string): never {
+    throw new ApplicationError(500, message);
   }
 }
