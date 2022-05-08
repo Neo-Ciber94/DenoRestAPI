@@ -32,7 +32,7 @@ const taskRouter = new Router({
     ctx.response.status = 201;
     ctx.response.headers.append("Location", `/tasks/${result.id}`);
   })
-  .post("/toggle/:id", async (ctx) => {
+  .put("/toggle/:id", async (ctx) => {
     const taskApiService = new TaskApiService(ctx.request);
     const result = await taskApiService.toggle(ctx.params.id);
     if (result == null) {

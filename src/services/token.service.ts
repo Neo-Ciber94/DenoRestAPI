@@ -3,6 +3,7 @@ import {
   Payload,
   Header,
   verify,
+  getNumericDate,
 } from "https://deno.land/x/djwt@v2.2/mod.ts";
 
 export interface GenerateTokenConfig<T> {
@@ -16,7 +17,10 @@ const ALGORITHM = "HS256";
 export class TokenService<T> {
   generate(config: GenerateTokenConfig<T>): Promise<string> {
     const header: Header = { alg: ALGORITHM };
-    const payload: Payload = { exp: config.expiresMs, ...config.payload };
+    const payload: Payload = { 
+      exp: getNumericDate(config.expiresMs), 
+      ...config.payload 
+    };
     return create(header, payload, config.secret);
   }
 
@@ -24,7 +28,8 @@ export class TokenService<T> {
     try {
       const result = await verify(token, secret, ALGORITHM);
       return result as unknown as T;
-    } catch {
+    } catch (e) {
+      console.error(e);
       return undefined;
     }
   }

@@ -2,6 +2,8 @@ import "https://deno.land/x/dotenv@v3.2.0/load.ts";
 import { Assert } from "../utils/assert.ts";
 
 export module Config {
+  export const ENVIRONMENT = getEnvOrThrow("ENVIRONMENT");
+  export const CONSOLE_LOG_ERRORS = getEnvOrThrow("CONSOLE_LOG_ERRORS") === "true";
   export const REDIS_HOST = getEnvOrThrow("REDIS_HOST");
   export const REDIS_PORT = getEnvOrThrow("REDIS_PORT");
   export const TOKEN_SECRET = getEnvOrThrow("TOKEN_SECRET");

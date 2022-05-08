@@ -57,7 +57,6 @@ export class TaskApiService implements ApiService<Task, string> {
     const userId = await this.currentUserService.getId();
     const newEntity: DeepPartial<Task> & { id: string } = {
       ...task!,
-      completed: false,
       lastUpdateDate: new Date(),
       lastUpdatedByUser: userId,
     };

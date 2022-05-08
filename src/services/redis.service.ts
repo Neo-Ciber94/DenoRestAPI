@@ -73,7 +73,18 @@ export class RedisApiService<T extends Entity<string>>
       return undefined;
     }
 
-    const newEntity = { ...entity, ...entityToUpdate } as T;
+    const newEntity = Object.assign({}, entityToUpdate);
+
+    for (const [key, value] of Object.entries(entity)) {
+      if (key === "id") {
+        continue;
+      }
+
+      if (value) {
+        (newEntity as any)[key] = value;
+      }
+    }
+
     const result = await redisInstance.set(
       entity.id,
       JSON.stringify(newEntity)

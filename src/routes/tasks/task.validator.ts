@@ -6,7 +6,7 @@ import Schema, {
 
 const taskCreateSchema = Schema({
   title: string.test(noBlank),
-  tags: array.of(string.test(noBlank)),
+  tags: array.of(string.test(noBlank)).optional(),
 });
 
 export const taskCreateValidator = taskCreateSchema.destruct();

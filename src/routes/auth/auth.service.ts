@@ -19,7 +19,7 @@ import {
   userLoginValidator,
 } from "./auth.validator.ts";
 
-const ERROR_INVALID_CREDENTIALS = "Invalid user or password";
+const ERROR_INVALID_CREDENTIALS = "Invalid username or password";
 
 export class AuthService {
   private readonly userService = new UserService();
@@ -34,7 +34,7 @@ export class AuthService {
 
   async createUser(userCreate: UserCreate): Promise<UserProfile> {
     const [error, _] = userCreateValidator(userCreate);
-    
+
     if (error) {
       ApplicationError.throwBadRequest(error.message);
     }

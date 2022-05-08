@@ -1,4 +1,5 @@
 import { Middleware } from "https://deno.land/x/oak@v10.5.1/middleware.ts";
+import { Config } from "../config/mod.ts";
 import { ApplicationError } from "../errors/app.error.ts";
 import getStatusCodeMessage from "../utils/getStatusCodeMessage.ts";
 
@@ -19,6 +20,10 @@ const errorMiddleware: Middleware = async (ctx, next) => {
       ctx.response.body = {
         message: err.message || "An error occurred",
       };
+    }
+
+    if (Config.CONSOLE_LOG_ERRORS) {
+      console.error(err);
     }
   }
 };
