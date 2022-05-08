@@ -1,4 +1,12 @@
 {
+  "lint": {
+    "rules": {
+      "exclude": [
+        "no-namespace",
+        "no-explicit-any"
+      ]
+    }
+  },
   "tasks": {
     "run": "deno run --allow-net --allow-env --allow-read --allow-write --import-map=./import-map.json --watch src/app.ts",
     "test": "deno test --allow-net",

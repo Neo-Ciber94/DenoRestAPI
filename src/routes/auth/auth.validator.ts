@@ -1,4 +1,4 @@
-import Schema, { array, boolean, string } from "computed_types";
+import Schema, { string } from "computed_types";
 
 const userCreateSchema = Schema({
   username: string.test(noBlank),

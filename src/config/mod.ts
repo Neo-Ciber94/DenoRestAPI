@@ -1,7 +1,7 @@
 import "dotenv/load";
 import { Assert } from "../utils/assert.ts";
 
-export module Config {
+export namespace Config {
   export const ENVIRONMENT = getEnvOrThrow("ENVIRONMENT");
   export const CONSOLE_LOG_ERRORS =
     getEnvOrThrow("CONSOLE_LOG_ERRORS") === "true";

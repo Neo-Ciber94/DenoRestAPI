@@ -11,7 +11,8 @@ export const redisInstance = await connect({
 });
 
 export class RedisApiService<T extends Entity<string>>
-  implements ApiService<T, string> {
+  implements ApiService<T, string>
+{
   constructor(readonly baseKey: string) {}
 
   get client() {
@@ -54,7 +55,7 @@ export class RedisApiService<T extends Entity<string>>
     const newEntity: T = { id, ...entity } as T;
     const result = await redisInstance.set(
       this.keyFor(id),
-      JSON.stringify(newEntity),
+      JSON.stringify(newEntity)
     );
 
     if (result !== "OK") {
@@ -65,14 +66,14 @@ export class RedisApiService<T extends Entity<string>>
   }
 
   async update(
-    entity: DeepPartial<T> & { id: string },
+    entity: DeepPartial<T> & { id: string }
   ): Promise<T | undefined> {
     const entityToUpdate = await this.get(entity.id);
     if (entityToUpdate == null) {
       return undefined;
     }
 
-    const newEntity = Object.assign({}, entityToUpdate);
+    const newEntity = Object.assign({}, entityToUpdate) as T;
 
     for (const [key, value] of Object.entries(entity)) {
       if (key === "id") {
@@ -86,7 +87,7 @@ export class RedisApiService<T extends Entity<string>>
 
     const result = await redisInstance.set(
       this.keyFor(entity.id),
-      JSON.stringify(newEntity),
+      JSON.stringify(newEntity)
     );
 
     if (result !== "OK") {

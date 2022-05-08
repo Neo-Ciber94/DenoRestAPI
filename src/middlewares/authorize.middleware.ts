@@ -21,10 +21,7 @@ export type AuthorizeFn = (
   req: Readonly<OakRquest>,
 ) => Promise<boolean> | boolean;
 
-function authorize(
-  this: any,
-  options?: AuthorizeOptions | AuthorizeFn,
-): Middleware {
+function authorize(options?: AuthorizeOptions | AuthorizeFn): Middleware {
   return async (ctx, next) => {
     const currentUserService = new CurrentUserService(ctx.request);
     const userPayload = await currentUserService.getUserPayload();
@@ -112,7 +109,7 @@ function optionsToAuthorizeFn(
 
 function getAllowListRegExp(
   values: Pattern[] | AllowList[],
-  kind: keyof AllowList,
+  kind: keyof AllowList
 ): RegExp[] {
   return values
     .flatMap(patternToAllowList)
