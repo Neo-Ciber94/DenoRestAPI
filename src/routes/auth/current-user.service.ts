@@ -7,6 +7,7 @@ import { Request as OakRequest } from "oak";
 export interface UserPayload {
   id: string;
   username: string;
+  roles: string[];
 }
 
 export class CurrentUserService {
@@ -20,22 +21,36 @@ export class CurrentUserService {
     return payload ? this.userService.get(payload.id) : undefined;
   }
 
-  async getUserPayload(): Promise<UserPayload | undefined> {
-    const payload = await this.getUserPayloadAndUser();
-    return payload ? { id: payload.id, username: payload.username } : undefined;
-  }
-
   async getId(): Promise<string | undefined> {
-    const payload = await this.getUserPayloadAndUser();
+    const payload = await this.getUserPayload();
     return payload?.id;
   }
 
+  async getRoles(): Promise<string[]> {
+    const payload = await this.getUserPayload();
+    return payload?.roles ?? [];
+  }
+
   async getToken(): Promise<string | undefined> {
-    const payload = await this.getUserPayloadAndUser();
+    const payload = await this.getUserPayloadAndToken();
     return payload?.token;
   }
 
-  async getUserPayloadAndUser(): Promise<
+  async getUserPayload(): Promise<UserPayload | undefined> {
+    const payload = await this.getUserPayloadAndToken();
+
+    if (payload == null) {
+      return undefined;
+    }
+
+    return {
+      id: payload.id,
+      username: payload.username,
+      roles: payload.roles,
+    };
+  }
+
+  async getUserPayloadAndToken(): Promise<
     (UserPayload & { token: string }) | undefined
   > {
     const authorization = this.request.headers.get("Authorization");

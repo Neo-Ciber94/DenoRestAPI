@@ -9,3 +9,8 @@ services:
             - 63791:8001
         volumes:
             - ./data:/data
+        networks:
+            - "bridge"
+networks:
+    bridge:
+        driver: bridge

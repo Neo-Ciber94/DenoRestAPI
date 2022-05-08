@@ -1,6 +1,12 @@
 {
   "tasks": {
-    "dev": "deno run --allow-net --allow-env --allow-read --allow-write --watch src/app.ts"
+    "run": "deno run --allow-net --allow-env --allow-read --allow-write --import-map=./import-map.json --watch src/app.ts",
+    "docker:build": "docker build -t deno-restapi .",
+    "docker:run": "docker run --name deno-restapi -dp 8080:8080 --net bridge --restart=always --env-file=.env deno-restapi",
+    "docker:stop": "docker stop deno-restapi",
+    "docker:rm": "docker rm --force deno-restapi",
+    "redis:up" : "docker compose --file=docker-compose.redis.yml up -d",
+    "redis:down": "docker compose --file=docker-compose.redis.yml down"
   },
-  "importMap": "import-map.json"
+  "importMap": "./import-map.json"
 }

@@ -80,6 +80,7 @@ export class AuthService {
       payload: {
         id: user.id,
         username: user.username,
+        roles: [],
       },
     });
 
@@ -92,26 +93,28 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    const userPayload = await this.currentUserService.getUserPayloadAndUser();
+    const userPayload = await this.currentUserService.getUserPayloadAndToken();
 
     if (userPayload == null) {
       ApplicationError.throwUnauthorized();
     }
 
+    const { id, token } = userPayload;
+
     // prettier-ignore
-    if (!(await this.loggedUserService.remove(userPayload.id, userPayload.token))) {
+    if (!(await this.loggedUserService.remove(id, token))) {
       ApplicationError.throwUnauthorized();
     }
   }
 
   async me(): Promise<UserProfile> {
-    const userPayload = await this.currentUserService.getUserPayloadAndUser();
+    const userId = await this.currentUserService.getId();
 
-    if (userPayload == null) {
+    if (userId == null) {
       ApplicationError.throwUnauthorized();
     }
 
-    const user = await this.userService.get(userPayload.id);
+    const user = await this.userService.get(userId);
 
     if (user == null) {
       ApplicationError.throwNotFound("User not found");

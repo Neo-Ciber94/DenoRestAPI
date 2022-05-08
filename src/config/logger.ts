@@ -17,7 +17,7 @@ await log.setup({
       formatter: consoleFormatter,
     }),
     file: new log.handlers.RotatingFileHandler("WARNING", {
-      filename: "./logs/logs.txt",
+      filename: lOGS_PATH,
       maxBackupCount: 12,
       maxBytes: 800000,
     }),
