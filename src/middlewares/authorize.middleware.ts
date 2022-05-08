@@ -1,4 +1,4 @@
-import { Middleware } from "https://deno.land/x/oak@v10.5.1/middleware.ts";
+import { Middleware } from "oak";
 import { CurrentUserService } from "../routes/auth/current-user.service.ts";
 
 function authorize(): Middleware {

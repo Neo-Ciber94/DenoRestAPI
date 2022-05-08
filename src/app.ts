@@ -1,5 +1,5 @@
 import logger from "./config/logger.ts";
-import { Application } from "https://deno.land/x/oak@v10.5.1/mod.ts";
+import { Application } from "oak";
 import loggerMiddleware from "./middlewares/logger.middleware.ts";
 import errorMiddleware from "./middlewares/error.middleware.ts";
 import taskRouter from "./routes/tasks/task.route.ts";

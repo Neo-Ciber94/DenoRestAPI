@@ -1,4 +1,4 @@
-import { Middleware } from "https://deno.land/x/oak@v10.5.1/middleware.ts";
+import { Middleware } from "oak";
 import { Config } from "../config/mod.ts";
 import { ApplicationError } from "../errors/app.error.ts";
 import getStatusCodeMessage from "../utils/getStatusCodeMessage.ts";

@@ -4,7 +4,7 @@ import { DeepPartial } from "../../types/deep-partial.ts";
 import { RedisApiService } from "../../services/redis.service.ts";
 import { ApplicationError } from "../../errors/app.error.ts";
 import { taskCreateValidator, taskUpdateValidator } from "./task.validator.ts";
-import { Request as OakRequest } from "https://deno.land/x/oak@v10.5.1/request.ts";
+import { Request as OakRequest } from "oak";
 import { CurrentUserService } from "../auth/current-user.service.ts";
 
 export class TaskApiService implements ApiService<Task, string> {

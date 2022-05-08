@@ -1,11 +1,11 @@
-import * as log from "https://deno.land/std@0.138.0/log/mod.ts";
-import { dirname } from "https://deno.land/std@0.138.0/path/mod.ts";
+import * as log from "std/log";
+import { dirname } from "std/path";
 import {
   blue,
   bold,
   red,
   yellow,
-} from "https://deno.land/std@0.95.0/fmt/colors.ts";
+} from "std/fmt/colors";
 
 const lOGS_PATH = "./logs/logs.txt";
 

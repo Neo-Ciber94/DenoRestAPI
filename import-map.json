@@ -1,0 +1,13 @@
+{
+  "imports": {
+    "std/fmt/colors": "https://deno.land/std@0.95.0/fmt/colors.ts",
+    "std/path": "https://deno.land/std@0.138.0/path/mod.ts",
+    "std/log": "https://deno.land/std@0.138.0/log/mod.ts",
+    "oak": "https://deno.land/x/oak@v10.5.1/mod.ts",
+    "bcrypt": "https://deno.land/x/bcrypt@v0.3.0/mod.ts",
+    "redis": "https://deno.land/x/redis@v0.25.5/mod.ts",
+    "djwt": "https://deno.land/x/djwt@v2.2/mod.ts",
+    "computed_types": "https://denoporter.sirjosh.workers.dev/v1/deno.land/x/computed_types/src/index.ts",
+    "dotenv/load": "https://deno.land/x/dotenv@v3.2.0/load.ts"
+  }
+}

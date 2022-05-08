@@ -12,7 +12,7 @@ import {
 } from "./auth.model.ts";
 import { Config } from "../../config/mod.ts";
 import { CurrentUserService, UserPayload } from "./current-user.service.ts";
-import { Request as OakRequest } from "https://deno.land/x/oak@v10.5.1/request.ts";
+import { Request as OakRequest } from "oak";
 import {
   userChangePasswordValidator,
   userCreateValidator,

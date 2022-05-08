@@ -1,4 +1,4 @@
-import { Router } from "https://deno.land/x/oak@v10.5.1/router.ts";
+import { Router } from "oak";
 import { TaskApiService } from "./task.service.ts";
 import authorize from "../../middlewares/authorize.middleware.ts";
 

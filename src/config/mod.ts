@@ -1,4 +1,4 @@
-import "https://deno.land/x/dotenv@v3.2.0/load.ts";
+import "dotenv/load";
 import { Assert } from "../utils/assert.ts";
 
 export module Config {

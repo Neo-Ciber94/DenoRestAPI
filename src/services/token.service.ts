@@ -4,7 +4,7 @@ import {
   Header,
   verify,
   getNumericDate,
-} from "https://deno.land/x/djwt@v2.2/mod.ts";
+} from "djwt";
 
 export interface GenerateTokenConfig<T> {
   secret: string;

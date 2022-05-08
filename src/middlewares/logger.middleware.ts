@@ -1,5 +1,5 @@
-import * as log from "https://deno.land/std@0.138.0/log/mod.ts";
-import { Middleware } from "https://deno.land/x/oak@v10.5.1/middleware.ts";
+import * as log from "std/log";
+import { Middleware } from "oak";
 
 const logger = log.getLogger();
 

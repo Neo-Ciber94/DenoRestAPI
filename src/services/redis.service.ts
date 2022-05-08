@@ -1,4 +1,4 @@
-import { connect } from "https://deno.land/x/redis@v0.25.5/mod.ts";
+import { connect } from "redis";
 import { DeepPartial } from "../types/deep-partial.ts";
 import { ApiService } from "./base.service.ts";
 import { Entity } from "../types/entity.ts";
