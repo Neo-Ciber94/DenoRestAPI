@@ -3,10 +3,6 @@ export class ApplicationError extends Error {
     super(message);
   }
 
-  static throwNotFound(message?: string): never {
-    throw new ApplicationError(404, message);
-  }
-
   static throwBadRequest(message?: string): never {
     throw new ApplicationError(400, message);
   }
@@ -17,5 +13,9 @@ export class ApplicationError extends Error {
 
   static throwForbidden(message?: string): never {
     throw new ApplicationError(403, message);
+  }
+
+  static throwNotFound(message?: string): never {
+    throw new ApplicationError(404, message);
   }
 }
