@@ -29,7 +29,7 @@ export class LoggedUserService {
       pattern,
     });
 
-    let total = keys.length;
+    const total = keys.length;
     let count = 0;
 
     for (const key of keys) {
