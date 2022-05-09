@@ -8,7 +8,6 @@ import {
   ChildUserProfile,
   ChildUserUpdate,
   SetChildUserAccount,
-  User,
   UserChangePassword,
   UserCreate,
   UserLogin,
@@ -52,6 +51,7 @@ export class AuthService {
     const result = await this.userService.create({
       username: userCreate.username,
       password: passwordHash,
+      permissions: getAllPermissions(),
     });
 
     return {
@@ -133,7 +133,7 @@ export class AuthService {
       payload: {
         id: user.id,
         username: user.username,
-        permissions: getAllPermissions(),
+        permissions: user.permissions,
       },
     });
 
@@ -154,7 +154,6 @@ export class AuthService {
 
     const { id, token } = userPayload;
 
-    // prettier-ignore
     if (!(await this.loggedUserService.remove(id, token))) {
       ApplicationError.throwUnauthorized();
     }
@@ -204,7 +203,12 @@ export class AuthService {
 
     const passwordHash = await this.hasher.hash(userChangePassword.newPassword);
     user.passwordHash = passwordHash;
-    await this.userService.update(user);
+
+    const result = await this.userService.update(user);
+
+    if (result) {
+      await this.logout();
+    }
   }
 
   async setChildUserPassword(
@@ -218,7 +222,7 @@ export class AuthService {
 
     const user = await this.currentUserService.loadUser();
 
-    if (user == null || user.parentUserId == null) {
+    if (user == null || user.parentUserId != null) {
       ApplicationError.throwForbidden();
     }
 
@@ -232,10 +236,20 @@ export class AuthService {
       setChildUserPassword.newPassword
     );
     childUser.passwordHash = passwordHash;
-    await this.userService.update({
+    const result = await this.userService.update({
       id: childUser.id,
       passwordHash,
     });
+
+    if (result) {
+      const [total, count] = await this.loggedUserService.removeUser(
+        childUser.id
+      );
+
+      if (total != count) {
+        // No all accounts where logged out
+      }
+    }
   }
 
   async updateChildUser(
@@ -249,7 +263,7 @@ export class AuthService {
 
     const user = await this.currentUserService.loadUser();
 
-    if (user == null || user.parentUserId == null) {
+    if (user == null || user.parentUserId != null) {
       ApplicationError.throwForbidden();
     }
 
@@ -294,7 +308,7 @@ export class AuthService {
       ApplicationError.throwUnauthorized();
     }
 
-    if (user.parentUserId == null) {
+    if (user.parentUserId != null) {
       ApplicationError.throwForbidden();
     }
 
@@ -318,6 +332,44 @@ export class AuthService {
     return this.getChildUsersAccounts().then((users) =>
       users.find((u) => u.id === childId)
     );
+  }
+
+  async deleteChildUser(
+    childId: string
+  ): Promise<ChildUserProfile | undefined> {
+    const user = await this.currentUserService.loadUser();
+
+    if (user == null) {
+      ApplicationError.throwUnauthorized();
+    }
+
+    if (user.parentUserId == null) {
+      ApplicationError.throwForbidden();
+    }
+
+    const childUser = await this.userService.get(childId);
+    if (childUser == null) {
+      return undefined;
+    }
+
+    if (childUser.parentUserId != user.id) {
+      ApplicationError.throwForbidden();
+    }
+
+    const result = await this.userService.delete(childId);
+
+    if (result == null) {
+      return undefined;
+    }
+
+    return {
+      id: result.id,
+      username: result.username,
+      permissions: result.permissions,
+      parentUserId: result.parentUserId,
+      creationDate: result.creationDate,
+      lastUpdateDate: result.lastUpdateDate,
+    };
   }
 
   async refreshUsersPermissions() {

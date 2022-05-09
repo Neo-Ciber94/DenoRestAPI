@@ -39,6 +39,60 @@ const authRouter = new Router({
 
     ctx.response.body = result;
     ctx.response.status = 200;
+  })
+  // Child user
+  .get("/child_account", async (ctx) => {
+    const authService = new AuthService(ctx.request);
+    const result = await authService.getChildUsersAccounts();
+
+    ctx.response.body = result;
+    ctx.response.status = 200;
+  })
+  .get("/child_account/:id", async (ctx) => {
+    const authService = new AuthService(ctx.request);
+    const result = await authService.getChildUserAccountById(ctx.params.id);
+
+    if (result == null) {
+      ctx.response.status = 404;
+      return;
+    }
+
+    ctx.response.body = result;
+    ctx.response.status = 200;
+  })
+  .post("/child_account", authorize(), async (ctx) => {
+    const authService = new AuthService(ctx.request);
+    const obj = await ctx.request.body({ type: "json" }).value;
+    const result = await authService.createChildUserAccount(obj);
+
+    ctx.response.body = result;
+    ctx.response.status = 200;
+  })
+  .put("/child_account", authorize(), async (ctx) => {
+    const authService = new AuthService(ctx.request);
+    const obj = await ctx.request.body({ type: "json" }).value;
+    await authService.updateChildUser(obj);
+
+    ctx.response.status = 200;
+  })
+  .put("/set_child_account_password", authorize(), async (ctx) => {
+    const authService = new AuthService(ctx.request);
+    const obj = await ctx.request.body({ type: "json" }).value;
+    await authService.setChildUserPassword(obj);
+
+    ctx.response.status = 200;
+  })
+  .delete("/child_account/:id", async (ctx) => {
+    const authService = new AuthService(ctx.request);
+    const result = await authService.deleteChildUser(ctx.params.id);
+
+    if (result == null) {
+      ctx.response.status = 404;
+      return;
+    }
+
+    ctx.response.body = result;
+    ctx.response.status = 200;
   });
 
 if (Config.ENVIRONMENT === "development") {

@@ -2,7 +2,7 @@ import { ApplicationError } from "../../errors/app.error.ts";
 import { ApiService } from "../../services/base.service.ts";
 import { RedisApiService } from "../../services/redis.service.ts";
 import { DeepPartial } from "../../types/deep-partial.ts";
-import { ChildUserCreate, User, UserCreate } from "./auth.model.ts";
+import { User } from "./auth.model.ts";
 
 type CreateNewUser = DeepPartial<User> & { username: string; password: string };
 

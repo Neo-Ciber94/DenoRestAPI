@@ -1,5 +1,5 @@
 import Schema, { array, string } from "computed_types";
-import { getAllPermissions, Permission } from "./permissions.ts";
+import { Permission } from "./permissions.ts";
 
 const userCreateSchema = Schema({
   username: string.test(noBlank),

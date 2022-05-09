@@ -1,8 +1,9 @@
-import { Middleware, Request as OakRquest } from "oak";
+import { Middleware, Request as OakRequest } from "oak";
 import {
   CurrentUserService,
   UserPayload,
 } from "../routes/auth/current-user.service.ts";
+import { LoggedUserService } from "../routes/auth/logged-user.service.ts";
 
 export type Pattern = string | RegExp;
 
@@ -18,17 +19,24 @@ export interface AuthorizeOptions {
 
 // prettier-ignore
 export type AuthorizeFn = (
-  req: Readonly<OakRquest>,
+  req: Readonly<OakRequest>,
 ) => Promise<boolean> | boolean;
 
 function authorize(options?: AuthorizeOptions | AuthorizeFn): Middleware {
   return async (ctx, next) => {
     const currentUserService = new CurrentUserService(ctx.request);
-    const userPayload = await currentUserService.getUserPayload();
+    const loggedUserService = new LoggedUserService();
+    const userPayload = await currentUserService.getUserPayloadAndToken();
 
     if (userPayload == null) {
       ctx.response.status = 401;
       ctx.response.body = "Unauthorized";
+      return;
+    }
+
+    const { id, token } = userPayload;
+
+    if (!(await loggedUserService.exists(id, token))) {
       return;
     }
 
@@ -60,7 +68,8 @@ function optionsToAuthorizeFn(
   options: AuthorizeOptions,
 ): AuthorizeFn {
   return (req) => {
-    const { permissions, ips } = options;
+    const { permissions = [], ips = [] } = options;
+    const userPermissions = userPayload.permissions;
 
     if (permissions && permissions.length > 0) {
       const allowedPermissions = getAllowListRegExp(permissions, "allow");
@@ -69,14 +78,14 @@ function optionsToAuthorizeFn(
       let isAllowed = false;
       let isDenied = false;
 
-      for (const permission of userPayload.permissions) {
+      for (const permission of userPermissions) {
         if (allowedPermissions.some((e) => e.test(permission))) {
           isAllowed = true;
           break;
         }
       }
 
-      for (const permission of userPayload.permissions) {
+      for (const permission of userPermissions) {
         if (deniedPermissions.some((e) => e.test(permission))) {
           isDenied = true;
           break;

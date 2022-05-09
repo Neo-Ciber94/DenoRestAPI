@@ -20,6 +20,29 @@ export class LoggedUserService {
     return result === 1;
   }
 
+  // FIXME: Don't return a tuple
+  async removeUser(userId: string): Promise<[number, number]> {
+    const key = `${KEY}:${userId}`;
+    const pattern = `${key}:*`;
+
+    const [_, keys] = await redis.scan(0, {
+      pattern,
+    });
+
+    let total = keys.length;
+    let count = 0;
+
+    for (const key of keys) {
+      const result = await redis.del(key);
+
+      if (result === 1) {
+        count++;
+      }
+    }
+
+    return [total, count];
+  }
+
   async exists(userId: string, token: string): Promise<boolean> {
     const key = keyFor(userId, token);
     const result = await redis.get(key);
