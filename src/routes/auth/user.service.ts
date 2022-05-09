@@ -2,9 +2,11 @@ import { ApplicationError } from "../../errors/app.error.ts";
 import { ApiService } from "../../services/base.service.ts";
 import { RedisApiService } from "../../services/redis.service.ts";
 import { DeepPartial } from "../../types/deep-partial.ts";
-import { User, UserCreate } from "./auth.model.ts";
+import { ChildUserCreate, User, UserCreate } from "./auth.model.ts";
 
-export class UserService implements ApiService<User, string, UserCreate> {
+type CreateNewUser = DeepPartial<User> & { username: string; password: string };
+
+export class UserService implements ApiService<User, string, CreateNewUser> {
   private readonly service = new RedisApiService<User>("users");
 
   get(key: string): Promise<User | undefined> {
@@ -20,19 +22,21 @@ export class UserService implements ApiService<User, string, UserCreate> {
     return users.find((u) => u.username == username);
   }
 
-  async create(entity: UserCreate): Promise<User> {
+  async create(entity: CreateNewUser): Promise<User> {
     await this.throwIfExist(entity.username);
 
     const newUser: DeepPartial<User> = {
       username: entity.username,
       passwordHash: entity.password,
       creationDate: new Date(),
+      parentUserId: entity.parentUserId,
+      permissions: entity.permissions,
     };
     return this.service.create(newUser);
   }
 
   async update(
-    entity: DeepPartial<User> & { id: string },
+    entity: DeepPartial<User> & { id: string }
   ): Promise<User | undefined> {
     if (entity.username) {
       await this.throwIfExist(entity.username);

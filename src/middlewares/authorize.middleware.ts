@@ -44,8 +44,8 @@ function authorize(options?: AuthorizeOptions | AuthorizeFn): Middleware {
       const isAuthorized = await authorizeFn(ctx.request);
 
       if (!isAuthorized) {
-        ctx.response.status = 401;
-        ctx.response.body = "Unauthorized";
+        ctx.response.status = 403;
+        ctx.response.body = "Forbidden";
         return;
       }
     }

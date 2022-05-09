@@ -6,7 +6,7 @@ import { Config } from "../../config/mod.ts";
 const authRouter = new Router({
   prefix: "/auth",
 })
-  .post("/create", async (ctx) => {
+  .post("/create_account", async (ctx) => {
     const authService = new AuthService(ctx.request);
     const obj = await ctx.request.body({ type: "json" }).value;
     const result = await authService.createUser(obj);
