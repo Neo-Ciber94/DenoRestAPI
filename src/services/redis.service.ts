@@ -33,19 +33,25 @@ export class RedisApiService<T extends Entity<string>>
   }
 
   async getAll(): Promise<T[]> {
-    const [_, ids] = await redisInstance.scan(0, {
-      pattern: `${this.baseKey}:*`,
-    });
-
     const result: T[] = [];
+    let cursor = 0;
 
-    for (const id of ids) {
-      const json = await redisInstance.get(id);
-      if (json != null) {
-        const value = JSON.parse(json) as T;
-        result.push(value);
+    do {
+      const [newCursor, ids] = await redisInstance.scan(cursor, {
+        pattern: `${this.baseKey}:*`,
+      });
+
+      cursor = Number(newCursor);
+
+      for (const id of ids) {
+        const json = await redisInstance.get(id);
+
+        if (json != null) {
+          const value = JSON.parse(json) as T;
+          result.push(value);
+        }
       }
-    }
+    } while (cursor != 0 && !isNaN(cursor));
 
     return result;
   }
