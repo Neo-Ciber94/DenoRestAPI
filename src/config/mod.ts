@@ -1,22 +1,39 @@
 import "dotenv/load";
 import { Assert } from "../utils/assert.ts";
 
+export enum Environment {
+  DEVELOPMENT = "development",
+  PRODUCTION = "production",
+}
+
 export namespace Config {
-  export const ENVIRONMENT = getEnvOrThrow("ENVIRONMENT");
+  export const ENVIRONMENT = getEnvOrDefault(
+    "ENVIRONMENT",
+    Environment.DEVELOPMENT
+  );
   export const CONSOLE_LOG_ERRORS =
-    getEnvOrThrow("CONSOLE_LOG_ERRORS") === "true";
+    getEnvOrDefault("CONSOLE_LOG_ERRORS", "false") === "true";
   export const REDIS_HOST = getEnvOrThrow("REDIS_HOST");
   export const REDIS_PORT = getEnvOrThrow("REDIS_PORT");
   export const TOKEN_SECRET = getEnvOrThrow("TOKEN_SECRET");
   export const TOKEN_EXPIRES_MS = Number(getEnvOrThrow("TOKEN_EXPIRES_MS"));
 
   export function isDevelopment(): boolean {
-    return ENVIRONMENT === "development";
+    return ENVIRONMENT === Environment.DEVELOPMENT;
   }
 }
 
 function getEnvOrThrow(key: string): string {
   const value = Deno.env.get(key);
   Assert.nonNull(value, `${key} is not defined`);
+  return value;
+}
+
+function getEnvOrDefault(key: string, defaultValue: string): string {
+  const value = Deno.env.get(key);
+  if (value == null) {
+    return defaultValue;
+  }
+
   return value;
 }

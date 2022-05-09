@@ -95,7 +95,7 @@ const authRouter = new Router({
     ctx.response.status = 200;
   });
 
-if (Config.ENVIRONMENT === "development") {
+if (Config.isDevelopment()) {
   authRouter.post("/refresh_users_permissions", async (ctx) => {
     const authService = new AuthService(ctx.request);
     await authService.refreshUsersPermissions();

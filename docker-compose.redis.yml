@@ -2,7 +2,7 @@
 services:
     redis:
         container_name: redis
-        image: redis/redis-stack:latest
+        image: redis/redis-stack:6.2.2-v3
         restart: 'always'
         ports:
             - 63790:6379

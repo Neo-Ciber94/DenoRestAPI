@@ -8,14 +8,17 @@
     }
   },
   "tasks": {
-    "run": "deno run --allow-net --allow-env --allow-read --allow-write --import-map=./import-map.json --watch src/app.ts",
+    "run": "deno run --allow-net --allow-env --allow-read --allow-write --import-map=./import-map.json src/app.ts",
+    "dev": "deno run --allow-net --allow-env --allow-read --allow-write --import-map=./import-map.json --watch src/app.ts",
     "test": "deno test --allow-net",
     "docker:build": "docker build -t deno-restapi .",
     "docker:run": "docker run --name deno-restapi -dp 8080:8080 --net bridge --restart=always --env-file=.env deno-restapi",
     "docker:stop": "docker stop deno-restapi",
     "docker:rm": "docker rm --force deno-restapi",
     "redis:up": "docker compose --file=docker-compose.redis.yml up -d",
-    "redis:down": "docker compose --file=docker-compose.redis.yml down"
+    "redis:down": "docker compose --file=docker-compose.redis.yml down",
+    "docker:up": "docker compose --file=docker-compose.dev.yml up -d",
+    "docker:down": "docker compose --file=docker-compose.dev.yml down"
   },
   "importMap": "./import-map.json"
 }

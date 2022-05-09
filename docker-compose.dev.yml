@@ -1,0 +1,37 @@
+services:
+    redis:
+        container_name: redis_db
+        image: redis/redis-stack:6.2.2-v3
+        restart: 'always'
+        ports:
+            - 3201:6379
+            - 3202:8001
+        volumes:
+            - ./data:/data
+        networks:
+            - "deno-restapi-db"
+    api:
+      container_name: "api"
+      build:
+        context: "."
+        dockerfile: Dockerfile
+      restart: 'always'
+      ports:
+        - 8999:3000
+      networks:
+        - "deno-restapi-db"
+        - "deno-restapi-api"
+      depends_on:
+        - redis
+      environment:
+          - PORT=3000
+          - ENVIRONMENT=development
+          - CONSOLE_LOG_ERRORS=false
+          - REDIS_HOST=redis
+          - REDIS_PORT=3201
+          - TOKEN_SECRET=SOME_SECRET_KEY
+          - TOKEN_EXPIRES_MS=604800000
+
+networks:
+    deno-restapi-db: {}
+    deno-restapi-api: {}
