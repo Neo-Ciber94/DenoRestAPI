@@ -1,5 +1,5 @@
 import { Task } from "./task.model.ts";
-import { ApiService } from "../../services/base.service.ts";
+import { ApiService } from "../../services/interfaces/api.service.ts";
 import { DeepPartial } from "../../types/deep-partial.ts";
 import { RedisApiService } from "../../services/redis.service.ts";
 import { ApplicationError } from "../../errors/app.error.ts";

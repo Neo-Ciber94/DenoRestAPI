@@ -1,5 +1,5 @@
 import { ApplicationError } from "../../errors/app.error.ts";
-import { ApiService } from "../../services/api.service.ts";
+import { ApiService } from "../../services/interfaces/api.service.ts";
 import { RedisApiService } from "../../services/redis.service.ts";
 import { DeepPartial } from "../../types/deep-partial.ts";
 import { User } from "./auth.model.ts";

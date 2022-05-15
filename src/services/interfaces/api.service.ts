@@ -1,5 +1,5 @@
-import { DeepPartial } from "../types/deep-partial.ts";
-import { Entity } from "../types/entity.ts";
+import { DeepPartial } from "../../types/deep-partial.ts";
+import { Entity } from "../../types/entity.ts";
 
 export interface ReadOnlyApiService<T extends Entity<TKey>, TKey = number> {
   get(key: TKey): Promise<T | undefined>;
