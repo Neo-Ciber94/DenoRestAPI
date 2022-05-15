@@ -9,6 +9,7 @@ export enum Environment {
 // prettier-ignore
 export namespace Config {
   export const ENVIRONMENT = getEnvOrDefault("ENVIRONMENT", Environment.DEVELOPMENT);
+  export const PORT = getEnvMap("PORT", Number);
   export const CONSOLE_LOG_ERRORS = getEnvOrDefault("CONSOLE_LOG_ERRORS", "false") === "true";
   export const REDIS_HOST = getEnvOrThrow("REDIS_HOST");
   export const REDIS_PORT = getEnvOrThrow("REDIS_PORT");
@@ -25,6 +26,15 @@ function getEnvOrThrow(key: string): string {
   const value = Deno.env.get(key);
   Assert.nonNull(value, `${key} is not defined`);
   return value;
+}
+
+function getEnvMap<T>(key: string, mapper: (s: string) => T): T | undefined {
+  const value = Deno.env.get(key);
+  if (value) {
+    return mapper(value);
+  }
+
+  return undefined;
 }
 
 function getEnvOrDefault(

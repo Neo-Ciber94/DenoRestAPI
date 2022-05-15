@@ -6,7 +6,7 @@ import taskRouter from "./routes/tasks/task.route.ts";
 import authRouter from "./routes/auth/auth.route.ts";
 import { Config } from "./config/mod.ts";
 
-const port = Number(Deno.env.get("PORT")) || 8000;
+const port = Config.PORT || 8000;
 const app = new Application();
 
 app.use(loggerMiddleware);
