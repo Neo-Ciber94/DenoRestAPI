@@ -3,6 +3,7 @@
   "deno.importMap": "import-map.json",
   "cSpell.words": [
     "datetime",
+    "denomailer",
     "djwt",
     "dockerc"
   ]

@@ -16,6 +16,8 @@ export namespace Config {
   export const REDIS_PASSWORD = getEnvOrThrow("REDIS_PASSWORD");
   export const TOKEN_SECRET = getEnvOrThrow("TOKEN_SECRET");
   export const TOKEN_EXPIRES_MS = Number(getEnvOrThrow("TOKEN_EXPIRES_MS"));
+  export const EMAIL_USERNAME = getEnvOrThrow("EMAIL_USERNAME");
+  export const EMAIL_PASSWORD = getEnvOrThrow("EMAIL_PASSWORD");
 
   export function isDevelopment(): boolean {
     return ENVIRONMENT === Environment.DEVELOPMENT;
