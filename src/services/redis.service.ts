@@ -1,6 +1,6 @@
 import { connect } from "redis";
 import { DeepPartial } from "../types/deep-partial.ts";
-import { ApiService } from "./base.service.ts";
+import { ApiService } from "./api.service.ts";
 import { Entity } from "../types/entity.ts";
 import { ApplicationError } from "../errors/app.error.ts";
 import { Config } from "../config/mod.ts";
