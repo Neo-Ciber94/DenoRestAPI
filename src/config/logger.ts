@@ -40,8 +40,7 @@ await log.setup({
 
 function fileFormatter(logRecord: log.LogRecord): string {
   const date = logRecord.datetime.toISOString();
-  let msg = `[${logRecord.levelName}] ${logRecord.msg} - ${date}`;
-  return msg;
+  return `[${logRecord.levelName}] ${logRecord.msg} - ${date}`;
 }
 
 function consoleFormatter(logRecord: log.LogRecord): string {

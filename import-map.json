@@ -9,6 +9,7 @@
     "redis": "https://deno.land/x/redis@v0.25.5/mod.ts",
     "djwt": "https://deno.land/x/djwt@v2.2/mod.ts",
     "computed_types": "https://denoporter.sirjosh.workers.dev/v1/deno.land/x/computed_types/src/index.ts",
+    "dotenv": "https://deno.land/x/dotenv/@v3.2.0/mod.ts",
     "dotenv/load": "https://deno.land/x/dotenv@v3.2.0/load.ts"
   }
 }

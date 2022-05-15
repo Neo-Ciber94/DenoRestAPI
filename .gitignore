@@ -2,3 +2,5 @@ data/
 logs/
 logs.*
 .env
+.env.prod*
+.env.dev*

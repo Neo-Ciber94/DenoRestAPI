@@ -1,5 +1,8 @@
-import "dotenv/load";
+import { config } from "dotenv";
 import { Assert } from "../utils/assert.ts";
+
+// Loads the .env
+config();
 
 export enum Environment {
   DEVELOPMENT = "development",
