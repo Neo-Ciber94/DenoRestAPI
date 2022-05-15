@@ -6,15 +6,13 @@ export enum Environment {
   PRODUCTION = "production",
 }
 
+// prettier-ignore
 export namespace Config {
-  export const ENVIRONMENT = getEnvOrDefault(
-    "ENVIRONMENT",
-    Environment.DEVELOPMENT
-  );
-  export const CONSOLE_LOG_ERRORS =
-    getEnvOrDefault("CONSOLE_LOG_ERRORS", "false") === "true";
+  export const ENVIRONMENT = getEnvOrDefault("ENVIRONMENT", Environment.DEVELOPMENT);
+  export const CONSOLE_LOG_ERRORS = getEnvOrDefault("CONSOLE_LOG_ERRORS", "false") === "true";
   export const REDIS_HOST = getEnvOrThrow("REDIS_HOST");
   export const REDIS_PORT = getEnvOrThrow("REDIS_PORT");
+  export const REDIS_PASSWORD = getEnvOrThrow("REDIS_PASSWORD");
   export const TOKEN_SECRET = getEnvOrThrow("TOKEN_SECRET");
   export const TOKEN_EXPIRES_MS = Number(getEnvOrThrow("TOKEN_EXPIRES_MS"));
 
@@ -29,7 +27,10 @@ function getEnvOrThrow(key: string): string {
   return value;
 }
 
-function getEnvOrDefault(key: string, defaultValue: string): string {
+function getEnvOrDefault(
+  key: string,
+  defaultValue?: string
+): string | undefined {
   const value = Deno.env.get(key);
   if (value == null) {
     return defaultValue;

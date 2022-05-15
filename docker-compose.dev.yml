@@ -1,15 +1,17 @@
 services:
     redis:
         container_name: redis_db
+        hostname: redis
         image: redis/redis-stack:6.2.2-v3
         restart: 'always'
         ports:
-            - 3201:6379
+            - 3201:3201
             - 3202:8001
+        command: redis-server --port 3201 --requirepass redis_password
         volumes:
             - ./data:/data
         networks:
-            - "deno-restapi-db"
+            - "deno-restapi-redis"
     api:
       container_name: "api"
       build:
@@ -19,7 +21,7 @@ services:
       ports:
         - 8999:3000
       networks:
-        - "deno-restapi-db"
+        - "deno-restapi-redis"
         - "deno-restapi-api"
       depends_on:
         - redis
@@ -29,9 +31,10 @@ services:
           - CONSOLE_LOG_ERRORS=false
           - REDIS_HOST=redis
           - REDIS_PORT=3201
+          - REDIS_PASSWORD=redis_password
           - TOKEN_SECRET=SOME_SECRET_KEY
           - TOKEN_EXPIRES_MS=604800000
 
 networks:
-    deno-restapi-db: {}
+    deno-restapi-redis: {}	
     deno-restapi-api: {}

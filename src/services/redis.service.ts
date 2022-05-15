@@ -8,6 +8,7 @@ import { Config } from "../config/mod.ts";
 export const redisInstance = await connect({
   hostname: Config.REDIS_HOST,
   port: Config.REDIS_PORT,
+  password: Config.REDIS_PASSWORD
 });
 
 export class RedisApiService<T extends Entity<string>>

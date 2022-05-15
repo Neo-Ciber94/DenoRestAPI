@@ -15,10 +15,12 @@
     "docker:run": "docker run --name deno-restapi -dp 8080:8080 --net bridge --restart=always --env-file=.env deno-restapi",
     "docker:stop": "docker stop deno-restapi",
     "docker:rm": "docker rm --force deno-restapi",
+    "redis:build": "docker compose --file=docker-compose.redis.yml build",
     "redis:up": "docker compose --file=docker-compose.redis.yml up -d",
     "redis:down": "docker compose --file=docker-compose.redis.yml down",
-    "docker:up": "docker compose --file=docker-compose.dev.yml up -d",
-    "docker:down": "docker compose --file=docker-compose.dev.yml down"
+    "dockerc:build": "docker compose --file=docker-compose.dev.yml build",
+    "dockerc:up": "docker compose --file=docker-compose.dev.yml up -d",
+    "dockerc:down": "docker compose --file=docker-compose.dev.yml down"
   },
   "importMap": "./import-map.json"
 }

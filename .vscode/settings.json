@@ -1,4 +1,8 @@
 {
   "deno.config": "deno.json",
-  "deno.importMap": "import-map.json"
+  "deno.importMap": "import-map.json",
+  "cSpell.words": [
+    "datetime",
+    "dockerc"
+  ]
 }

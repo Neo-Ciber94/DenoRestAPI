@@ -1,22 +1,34 @@
 import * as log from "std/log";
-import { dirname } from "std/path";
 import { blue, bold, red, yellow } from "std/fmt/colors";
+import { FileUtils } from "../utils/file-utils.ts";
 
 const lOGS_PATH = "./logs/logs.txt";
 
-createDirIfDontExist(lOGS_PATH);
+const consoleHandler = new log.handlers.ConsoleHandler("DEBUG", {
+  formatter: consoleFormatter,
+});
+
+const fileHandler = new log.handlers.RotatingFileHandler("DEBUG", {
+  filename: "./logs.txt",
+  formatter: (r) => {
+    try {
+      return JSON.stringify(r);
+    } finally {
+      fileHandler.flush();
+    }
+  },
+  maxBackupCount: 4,
+  maxBytes: 419_4304, // 4 MB
+});
+
+if (FileUtils.createDirIfDontExist(lOGS_PATH)) {
+  consoleHandler.log("Logs directory created");
+}
 
 await log.setup({
   handlers: {
-    console: new log.handlers.ConsoleHandler("DEBUG", {
-      formatter: consoleFormatter,
-    }),
-    file: new log.handlers.RotatingFileHandler("DEBUG", {
-      filename: lOGS_PATH,
-      maxBackupCount: 12,
-      maxBytes: 800_000,
-      mode: "a",
-    }),
+    console: consoleHandler,
+    file: fileHandler,
   },
   loggers: {
     default: {
@@ -48,19 +60,6 @@ function consoleFormatter(logRecord: log.LogRecord): string {
   }
 
   return msg;
-}
-
-function createDirIfDontExist(path: string): boolean {
-  try {
-    Deno.statSync(path);
-    return true;
-  } catch {
-    const dir = dirname(path);
-    Deno.mkdirSync(dir, {
-      recursive: true,
-    });
-    return false;
-  }
 }
 
 export default log;

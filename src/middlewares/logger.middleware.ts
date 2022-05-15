@@ -1,4 +1,4 @@
-import * as log from "std/log";
+import log from "../config/logger.ts";
 import { Middleware } from "oak";
 
 const logger = log.getLogger();
