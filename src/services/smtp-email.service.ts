@@ -9,7 +9,7 @@ const smtpClient = new SMTPClient({
   connection: {
     hostname: "smtp.office365.com",
     port: 587,
-    tls: false,
+    tls: false, // use TLS
     auth: {
       username: Config.EMAIL_USERNAME,
       password: Config.EMAIL_PASSWORD,

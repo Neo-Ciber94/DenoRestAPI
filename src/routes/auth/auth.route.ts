@@ -94,21 +94,6 @@ const authRouter = new Router({
 
     ctx.response.body = result;
     ctx.response.status = 200;
-  })
-
-  // Test
-  .post("/email", authorize(), async (ctx) => {
-    const emailSender = new SmtpEmailService();
-    const { message } = await ctx.request.body({ type: "json" }).value;
-    await emailSender.send({
-      from: Config.EMAIL_USERNAME,
-      to: Config.EMAIL_USERNAME,
-      subject: Config.EMAIL_USERNAME,
-      isHtml: true,
-      content: `<h1>${message}</h1>`,
-    });
-
-    ctx.response.status = 200;
   });
 
 if (Config.isDevelopment()) {
