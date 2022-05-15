@@ -8,11 +8,11 @@ const consoleHandler = new log.handlers.ConsoleHandler("DEBUG", {
   formatter: consoleFormatter,
 });
 
-const fileHandler = new log.handlers.RotatingFileHandler("DEBUG", {
-  filename: "./logs.txt",
+const fileHandler = new log.handlers.RotatingFileHandler("WARNING", {
+  filename: lOGS_PATH,
   formatter: (r) => {
     try {
-      return JSON.stringify(r);
+      return fileFormatter(r);
     } finally {
       fileHandler.flush();
     }
@@ -37,6 +37,12 @@ await log.setup({
     },
   },
 });
+
+function fileFormatter(logRecord: log.LogRecord): string {
+  const date = logRecord.datetime.toISOString();
+  let msg = `[${logRecord.levelName}] ${logRecord.msg} - ${date}`;
+  return msg;
+}
 
 function consoleFormatter(logRecord: log.LogRecord): string {
   const date = logRecord.datetime.toISOString();
