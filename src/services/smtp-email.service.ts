@@ -14,15 +14,14 @@ const smtpClient = new SMTPClient({
       username: Config.EMAIL_USERNAME,
       password: Config.EMAIL_PASSWORD,
     },
-  }
+  },
 });
-
 
 export class SmtpEmailService implements EmailSenderService {
   async send(props: EmailMessage): Promise<void> {
     await smtpClient.send({
       from: props.from,
-      to: "sovos79205@roxoas.com",
+      to: props.to,
       subject: props.subject,
       content: props.isHtml ? undefined : props.content,
       html: props.isHtml ? props.content : undefined,

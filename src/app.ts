@@ -5,6 +5,12 @@ import errorMiddleware from "./middlewares/error.middleware.ts";
 import taskRouter from "./routes/tasks/task.route.ts";
 import authRouter from "./routes/auth/auth.route.ts";
 import { Config } from "./config/mod.ts";
+import { WorkerDispatcher } from "./services/worker.service.ts";
+import { EmailSenderKey, SendEmail } from "./worker/email-sender.worker.ts";
+
+export const emailWorker = new WorkerDispatcher<EmailSenderKey, SendEmail>(
+  new URL("./worker/email-sender.worker.ts", import.meta.url)
+);
 
 const port = Config.PORT || 8000;
 const app = new Application();
