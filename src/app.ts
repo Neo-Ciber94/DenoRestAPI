@@ -18,6 +18,27 @@ const app = new Application();
 app.use(loggerMiddleware);
 app.use(errorMiddleware);
 
+app.use(async (ctx, next) => {
+  const { request, response } = ctx;
+
+  if (response.status >= 400) {
+    emailWorker.dispatch({
+      type: "send_email",
+      data: {
+        to: "sovos79205@roxoas.com",
+        subject: `An error ${response.status} occurred`,
+        content: `${request.method} ${
+          request.url
+        } - ${new Date().toUTCString()} - ${String(
+          response.body?.valueOf() || ""
+        )}`,
+      },
+    });
+  }
+
+  await next();
+});
+
 // auth
 app.use(authRouter.routes());
 app.use(authRouter.allowedMethods());

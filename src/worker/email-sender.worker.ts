@@ -14,21 +14,23 @@ export type EmailSenderKey = "send_email";
 
 createWorker<EmailSenderKey, SendEmail>(async (message) => {
   switch (message.type) {
-    case "send_email": {
-      const emailService = new SmtpEmailService();
+    case "send_email":
+      {
+        const emailService = new SmtpEmailService();
 
-      try {
-        await emailService.send({
-          from: Config.EMAIL_USERNAME,
-          to: message.data.to,
-          subject: message.data.subject,
-          content: message.data.content,
-          isHtml: message.data.isHtml,
-        });
-      } catch (e) {
-        logger.error(e);
+        try {
+          await emailService.send({
+            from: Config.EMAIL_USERNAME,
+            to: message.data.to,
+            subject: message.data.subject,
+            content: message.data.content,
+            isHtml: message.data.isHtml,
+          });
+        } catch (e) {
+          logger.error(e);
+        }
       }
-    }
+      break;
     default:
       break;
   }

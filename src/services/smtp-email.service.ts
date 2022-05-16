@@ -7,8 +7,8 @@ import { Config } from "../config/mod.ts";
 
 const smtpClient = new SMTPClient({
   connection: {
-    hostname: "smtp.office365.com",
-    port: 587,
+    hostname: Config.EMAIL_HOSTNAME,
+    port: Config.EMAIL_PORT,
     tls: false, // use TLS
     auth: {
       username: Config.EMAIL_USERNAME,

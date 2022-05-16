@@ -2,7 +2,6 @@ import { Router } from "oak";
 import { AuthService } from "./auth.service.ts";
 import authorize from "../../middlewares/authorize.middleware.ts";
 import { Config } from "../../config/mod.ts";
-import { SmtpEmailService } from "../../services/smtp-email.service.ts";
 
 const authRouter = new Router({
   prefix: "/auth",
