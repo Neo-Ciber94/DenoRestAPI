@@ -12,12 +12,13 @@ export interface SendEmail {
 
 export type EmailSenderKey = "send_email";
 
+logger.debug(`Web worker started...`);
+
 createWorker<EmailSenderKey, SendEmail>(async (message) => {
   switch (message.type) {
     case "send_email":
       {
         const emailService = new SmtpEmailService();
-
         try {
           await emailService.send({
             from: Config.EMAIL_USERNAME,
@@ -26,6 +27,8 @@ createWorker<EmailSenderKey, SendEmail>(async (message) => {
             content: message.data.content,
             isHtml: message.data.isHtml,
           });
+
+          logger.info(`Email send to: ${message.data.to}`);
         } catch (e) {
           logger.error(e);
         }

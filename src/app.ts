@@ -25,7 +25,7 @@ app.use(async (ctx, next) => {
     emailWorker.dispatch({
       type: "send_email",
       data: {
-        to: "sovos79205@roxoas.com",
+        to: "boniyeh816@dufeed.com",
         subject: `An error ${response.status} occurred`,
         content: `${request.method} ${
           request.url

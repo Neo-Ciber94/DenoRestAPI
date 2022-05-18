@@ -26,8 +26,7 @@ export function createWorker<TKey extends string = string, TData = unknown>(
 ) {
   const worker = self as unknown as Worker;
   worker.onmessage = (event) => {
-    const data = event.data;
-    const type = data.type || "unknown";
+    const { type = "unknown", data } = event.data;
     handler({ type, data });
   };
 }
