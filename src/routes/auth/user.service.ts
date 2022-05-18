@@ -4,7 +4,11 @@ import { RedisApiService } from "../../services/redis.service.ts";
 import { DeepPartial } from "../../types/deep-partial.ts";
 import { User } from "./auth.model.ts";
 
-type CreateNewUser = DeepPartial<User> & { username: string; password: string };
+type CreateNewUser = DeepPartial<User> & {
+  username: string;
+  email: string;
+  password: string;
+};
 
 export class UserService implements ApiService<User, string, CreateNewUser> {
   private readonly service = new RedisApiService<User>("users");
@@ -22,8 +26,14 @@ export class UserService implements ApiService<User, string, CreateNewUser> {
     return users.find((u) => u.username == username);
   }
 
+  async getByEmail(email: string): Promise<User | undefined> {
+    const users = await this.getAll();
+    return users.find((u) => u.email == email);
+  }
+
   async create(entity: CreateNewUser): Promise<User> {
-    await this.throwIfExist(entity.username);
+    await this.throwIfDuplicatedUsername(entity.username);
+    await this.throwIfDuplicatedEmail(entity.email);
 
     const newUser: DeepPartial<User> = {
       username: entity.username,
@@ -39,7 +49,7 @@ export class UserService implements ApiService<User, string, CreateNewUser> {
     entity: DeepPartial<User> & { id: string }
   ): Promise<User | undefined> {
     if (entity.username) {
-      await this.throwIfExist(entity.username);
+      await this.throwIfDuplicatedUsername(entity.username);
     }
 
     entity.lastUpdateDate = new Date();
@@ -50,10 +60,17 @@ export class UserService implements ApiService<User, string, CreateNewUser> {
     return this.service.delete(entity);
   }
 
-  private async throwIfExist(username: string): Promise<void> {
+  private async throwIfDuplicatedUsername(username: string): Promise<void> {
     const user = await this.getByUserName(username);
     if (user != null) {
       ApplicationError.throwBadRequest(`Username '${username}' already exists`);
+    }
+  }
+
+  private async throwIfDuplicatedEmail(email: string): Promise<void> {
+    const user = await this.getByEmail(email);
+    if (user != null) {
+      ApplicationError.throwBadRequest(`Email '${email}' already exists`);
     }
   }
 }

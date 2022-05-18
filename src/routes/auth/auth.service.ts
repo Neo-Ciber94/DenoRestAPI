@@ -50,6 +50,7 @@ export class AuthService {
     const passwordHash = await this.hasher.hash(userCreate.password);
     const result = await this.userService.create({
       username: userCreate.username,
+      email: userCreate.email,
       password: passwordHash,
       permissions: getAllPermissions(),
     });
@@ -101,6 +102,9 @@ export class AuthService {
       permissions: result.permissions,
       lastUpdateDate: result.lastUpdateDate,
       parentUserId: result.parentUserId!,
+      email: result.email,
+      isLocked: result.isLocked,
+      isEmailConfirmed: result.isEmailConfirmed,
     };
   }
 
@@ -124,6 +128,10 @@ export class AuthService {
 
     if (!isValid) {
       ApplicationError.throwBadRequest(ERROR_INVALID_CREDENTIALS);
+    }
+
+    if (user.isLocked === true) {
+      ApplicationError.throwForbidden("User account is locked");
     }
 
     const expirationMs = Config.TOKEN_EXPIRES_MS;
@@ -298,6 +306,9 @@ export class AuthService {
       parentUserId: result.parentUserId,
       creationDate: result.creationDate,
       lastUpdateDate: result.lastUpdateDate,
+      email: result.email,
+      isLocked: result.isLocked,
+      isEmailConfirmed: result.isEmailConfirmed,
     };
   }
 
@@ -323,6 +334,9 @@ export class AuthService {
       permissions: u.permissions,
       lastUpdateDate: u.lastUpdateDate,
       parentUserId: u.id,
+      email: u.email,
+      isLocked: u.isLocked,
+      isEmailConfirmed: u.isEmailConfirmed,
     }));
   }
 
@@ -369,6 +383,9 @@ export class AuthService {
       parentUserId: result.parentUserId,
       creationDate: result.creationDate,
       lastUpdateDate: result.lastUpdateDate,
+      email: result.email,
+      isLocked: result.isLocked,
+      isEmailConfirmed: result.isEmailConfirmed,
     };
   }
 

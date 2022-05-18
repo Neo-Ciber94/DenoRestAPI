@@ -5,15 +5,19 @@ import { Permission } from "./permissions.ts";
 
 export interface User extends Entity<string>, Auditable {
   username: string;
+  email: string;
   passwordHash: string;
   parentUserId?: string;
   permissions: Permission[];
+  isLocked: boolean;
+  isEmailConfirmed?: boolean;
 }
 
 export type UserProfile = Pick<User, "username" | "id" | "permissions">;
 
 export interface UserCreate {
   username: string;
+  email: string;
   password: string;
 }
 
@@ -34,6 +38,7 @@ export interface UserChangePassword {
 
 export interface ChildUserCreate {
   username: string;
+  email: string;
   password: string;
   permissions: Permission[];
 }
