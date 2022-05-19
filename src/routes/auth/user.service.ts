@@ -2,6 +2,7 @@ import { ApplicationError } from "../../errors/app.error.ts";
 import { ApiService } from "../../services/interfaces/api.service.ts";
 import { RedisApiService } from "../../services/redis.service.ts";
 import { DeepPartial } from "../../types/deep-partial.ts";
+import { RegexUtils } from "../../utils/regex-utils.ts";
 import { User } from "./auth.model.ts";
 
 type CreateNewUser = DeepPartial<User> & {
@@ -34,6 +35,10 @@ export class UserService implements ApiService<User, string, CreateNewUser> {
   async create(entity: CreateNewUser): Promise<User> {
     await this.throwIfDuplicatedUsername(entity.username);
     await this.throwIfDuplicatedEmail(entity.email);
+
+    if (!RegexUtils.isValidEmail(entity.email)) {
+      ApplicationError.throwBadRequest(`Invalid email '${entity.email}'`);
+    }
 
     const newUser: DeepPartial<User> = {
       username: entity.username,
