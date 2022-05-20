@@ -5,6 +5,7 @@
     "datetime",
     "denomailer",
     "djwt",
-    "dockerc"
+    "dockerc",
+    "psubscribe"
   ]
 }

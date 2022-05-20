@@ -1,40 +1,30 @@
-import { createWorker } from "../services/worker.service.ts";
+import { ERROR_EVENT_CHANNEL } from "../constants/mod.ts";
+import { connectToRedis } from "../database/redis.ts";
+import { RedisMessageSubscriber } from "../services/redis-pubsub.service.ts";
+import { ErrorReport } from "../types/error-report.ts";
 import { SmtpEmailService } from "../services/smtp-email.service.ts";
 import { Config } from "../config/mod.ts";
-import logger from "../config/logger.ts";
 
-export interface SendEmail {
-  to: string;
-  subject: string;
-  content: string;
-  isHtml?: boolean;
-}
+const worker = self as unknown as Worker;
+const redis = await connectToRedis();
+const subscriber = new RedisMessageSubscriber<ErrorReport>({
+  channels: ERROR_EVENT_CHANNEL,
+  client: redis,
+});
 
-export type EmailSenderKey = "send_email";
+worker.postMessage({
+  type: "ready",
+});
 
-logger.debug(`Web worker started...`);
+const emailSender = new SmtpEmailService();
 
-createWorker<EmailSenderKey, SendEmail>(async (message) => {
-  switch (message.type) {
-    case "send_email":
-      {
-        const emailService = new SmtpEmailService();
-        try {
-          await emailService.send({
-            from: Config.EMAIL_USERNAME,
-            to: message.data.to,
-            subject: message.data.subject,
-            content: message.data.content,
-            isHtml: message.data.isHtml,
-          });
+subscriber.onReceive(async (message) => {
+  const { method, status, url } = message;
 
-          logger.info(`Email send to: ${message.data.to}`);
-        } catch (e) {
-          logger.error(e);
-        }
-      }
-      break;
-    default:
-      break;
-  }
+  emailSender.send({
+    from: Config.EMAIL_USERNAME,
+    to: "boniyeh816@dufeed.com",
+    subject: `Error ${status} ocurred`,
+    content: `An error ${status} ocurred on ${method}: ${url}`,
+  });
 });

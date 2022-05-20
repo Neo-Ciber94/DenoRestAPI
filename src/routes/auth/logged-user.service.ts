@@ -1,4 +1,4 @@
-import { redisInstance } from "../../services/redis.service.ts";
+import { redisInstance } from "../../database/redis.ts";
 
 const redis = redisInstance;
 const KEY = "logged_user";

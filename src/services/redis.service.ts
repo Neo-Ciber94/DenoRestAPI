@@ -1,24 +1,13 @@
-import { connect } from "redis";
 import { DeepPartial } from "../types/deep-partial.ts";
 import { ApiService } from "./interfaces/api.service.ts";
 import { Entity } from "../types/entity.ts";
 import { ApplicationError } from "../errors/app.error.ts";
-import { Config } from "../config/mod.ts";
-
-export const redisInstance = await connect({
-  hostname: Config.REDIS_HOST,
-  port: Config.REDIS_PORT,
-  password: Config.REDIS_PASSWORD
-});
+import { redisInstance } from "../database/redis.ts";
 
 export class RedisApiService<T extends Entity<string>>
   implements ApiService<T, string>
 {
   constructor(readonly baseKey: string) {}
-
-  get client() {
-    return redisInstance;
-  }
 
   private keyFor(key: string): string {
     return `${this.baseKey}:${key}`;
