@@ -21,7 +21,7 @@ const emailSender = new SmtpEmailService();
 subscriber.onReceive(async (message) => {
   const { method, status, url } = message;
 
-  emailSender.send({
+  await emailSender.send({
     from: Config.EMAIL_USERNAME,
     to: "boniyeh816@dufeed.com",
     subject: `Error ${status} ocurred`,
