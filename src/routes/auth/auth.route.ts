@@ -40,6 +40,12 @@ const authRouter = new Router({
     ctx.response.body = result;
     ctx.response.status = 200;
   })
+  .get(`/${Config.CONFIRM_EMAIL_PATHNAME}`, async (ctx) => {
+    const authService = new AuthService(ctx.request);
+    await authService.confirmUserEmail();
+    ctx.response.status = 200;
+  })
+
   // Child user
   .get("/child_account", async (ctx) => {
     const authService = new AuthService(ctx.request);

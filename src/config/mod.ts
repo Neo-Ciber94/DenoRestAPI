@@ -20,6 +20,8 @@ export namespace Config {
   export const EMAIL_PORT = getEnvMap("EMAIL_PORT", Number);
   export const EMAIL_USERNAME = getEnvOrThrow("EMAIL_USERNAME");
   export const EMAIL_PASSWORD = getEnvOrThrow("EMAIL_PASSWORD");
+  export const CONFIRM_EMAIL_PATHNAME = "confirm-email";
+  export const CONFIRMATION_EMAIL_TOKEN_EXPIRES_SECS = getEnvMapOrThrow("CONFIRMATION_EMAIL_TOKEN_EXPIRES_SECS", Number);
 
   export function isDevelopment(): boolean {
     return ENVIRONMENT === Environment.DEVELOPMENT;
@@ -39,6 +41,12 @@ function getEnvMap<T>(key: string, mapper: (s: string) => T): T | undefined {
   }
 
   return undefined;
+}
+
+function getEnvMapOrThrow<T>(key: string, mapper: (s: string) => T): T {
+  const value = Deno.env.get(key);
+  Assert.nonNull(value, `${key} is not defined`);
+  return mapper(value);
 }
 
 function getEnvOrDefault(

@@ -3,12 +3,12 @@ import { RedisMessageSubscriber } from "../services/redis-pubsub.service.ts";
 import { SmtpEmailService } from "../services/smtp-email.service.ts";
 import { Config } from "../config/mod.ts";
 import logger from "../config/logger.ts";
-import { notifyReady } from "../utils/service-workers.ts";
+//import { notifyReady } from "../utils/service-workers.ts";
 
 export const SEND_EMAIL_MESSAGE_CHANNEL = "send-email-message";
 
 const worker = self as unknown as Worker;
-notifyReady(worker);
+//notifyReady(worker);
 
 export type SendEmailMessage = {
   to: string;

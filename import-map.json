@@ -11,6 +11,7 @@
     "computed_types": "https://denoporter.sirjosh.workers.dev/v1/deno.land/x/computed_types/src/index.ts",
     "dotenv": "https://deno.land/x/dotenv@v3.2.0/mod.ts",
     "dotenv/load": "https://deno.land/x/dotenv@v3.2.0/load.ts",
-    "denomailer": "https://deno.land/x/denomailer@1.0.1/mod.ts"
+    "denomailer": "https://deno.land/x/denomailer@1.0.1/mod.ts",
+    "std/uuid": "https://deno.land/std@0.139.0/uuid/mod.ts"
   }
 }

@@ -8,6 +8,7 @@ import {
   ChildUserProfile,
   ChildUserUpdate,
   SetChildUserAccount,
+  User,
   UserChangePassword,
   UserCreate,
   UserLogin,
@@ -26,8 +27,10 @@ import {
   userLoginValidator,
 } from "./auth.validator.ts";
 import { getAllPermissions, Permission } from "./permissions.ts";
+import { EmailConfirmationService } from "./email-confirmation.service.ts";
 
 const ERROR_INVALID_CREDENTIALS = "Invalid username or password";
+const CONFIRMATION_EMAIL_URL = `http://localhost:${Config.PORT}/${Config.CONFIRM_EMAIL_PATHNAME}`;
 
 export class AuthService {
   private readonly userService = new UserService();
@@ -35,8 +38,9 @@ export class AuthService {
   private readonly tokenService = new TokenService<UserPayload>();
   private readonly loggedUserService = new LoggedUserService();
   private readonly currentUserService: CurrentUserService;
+  private readonly confirmationEmailService = new EmailConfirmationService();
 
-  constructor(request: OakRequest) {
+  constructor(private request: OakRequest) {
     this.currentUserService = new CurrentUserService(request);
   }
 
@@ -54,6 +58,8 @@ export class AuthService {
       password: passwordHash,
       permissions: getAllPermissions(),
     });
+
+    await this.sendConfirmationEmail(result);
 
     return {
       id: result.id,
@@ -95,6 +101,8 @@ export class AuthService {
       permissions,
     });
 
+    await this.sendConfirmationEmail(result);
+
     return {
       id: result.id,
       creationDate: result.creationDate,
@@ -106,6 +114,17 @@ export class AuthService {
       isLocked: result.isLocked,
       isEmailConfirmed: result.isEmailConfirmed,
     };
+  }
+
+  async confirmUserEmail(): Promise<void> {
+    const queryParams = this.request.url.searchParams;
+    const confirmationToken = queryParams.get("token");
+
+    if (confirmationToken == null) {
+      ApplicationError.throwUnauthorized("Missing confirmation token");
+    }
+
+    await this.confirmationEmailService.confirmUserEmail(confirmationToken);
   }
 
   async login(userLogin: UserLogin): Promise<UserToken> {
@@ -132,6 +151,10 @@ export class AuthService {
 
     if (user.isLocked === true) {
       ApplicationError.throwForbidden("User account is locked");
+    }
+
+    if (user.isEmailConfirmed !== true) {
+      ApplicationError.throwForbidden("User email is not verified");
     }
 
     const expirationMs = Config.TOKEN_EXPIRES_MS;
@@ -402,5 +425,11 @@ export class AuthService {
         });
       }
     }
+  }
+
+  private async sendConfirmationEmail(user: User): Promise<void> {
+    const token = this.confirmationEmailService.generateConfirmationToken();
+    const url = `${CONFIRMATION_EMAIL_URL}?token=${token}`;
+    await this.confirmationEmailService.sendConfirmationEmail(user, url, token);
   }
 }

@@ -1,8 +1,10 @@
 import Schema, { array, string } from "computed_types";
+import { RegexUtils } from "../../utils/regex-utils.ts";
 import { Permission } from "./permissions.ts";
 
 const userCreateSchema = Schema({
   username: string.test(noBlank),
+  email: string.test(isEmail),
   password: string.test(noBlank).min(3),
 });
 
@@ -25,6 +27,7 @@ export const userChangePasswordValidator = userChangePasswordSchema.destruct();
 const childUserCreateSchema = Schema({
   username: string.test(noBlank),
   password: string.test(noBlank).min(3),
+    email: string.test(isEmail),
   permissions: array.of(Schema.enum(Permission)).optional(),
 });
 
@@ -48,4 +51,8 @@ export const childUserUpdateValidator = childUserUpdateSchema.destruct();
 
 function noBlank(s: string) {
   return s.trim().length > 0 ? "no blank" : undefined;
+}
+
+function isEmail(s: string) {
+  return !RegexUtils.isValidEmail(s) ? "invalid email" : undefined;
 }

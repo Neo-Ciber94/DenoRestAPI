@@ -33,12 +33,7 @@ export class UserService implements ApiService<User, string, CreateNewUser> {
   }
 
   async create(entity: CreateNewUser): Promise<User> {
-    await this.throwIfDuplicatedUsername(entity.username);
-    await this.throwIfDuplicatedEmail(entity.email);
-
-    if (!RegexUtils.isValidEmail(entity.email)) {
-      ApplicationError.throwBadRequest(`Invalid email '${entity.email}'`);
-    }
+    await this.validateUser(entity);
 
     const newUser: DeepPartial<User> = {
       username: entity.username,
@@ -53,9 +48,7 @@ export class UserService implements ApiService<User, string, CreateNewUser> {
   async update(
     entity: DeepPartial<User> & { id: string }
   ): Promise<User | undefined> {
-    if (entity.username) {
-      await this.throwIfDuplicatedUsername(entity.username);
-    }
+    await this.validateUser(entity);
 
     entity.lastUpdateDate = new Date();
     return this.service.update(entity);
@@ -63,6 +56,20 @@ export class UserService implements ApiService<User, string, CreateNewUser> {
 
   delete(entity: string): Promise<User | undefined> {
     return this.service.delete(entity);
+  }
+
+  private async validateUser(user: DeepPartial<User>) {
+    if (user.username) {
+      await this.throwIfDuplicatedUsername(user.username);
+    }
+
+    if (user.email) {
+      await this.throwIfDuplicatedEmail(user.email);
+
+      if (!RegexUtils.isValidEmail(user.email)) {
+        ApplicationError.throwBadRequest(`Invalid email '${user.email}'`);
+      }
+    }
   }
 
   private async throwIfDuplicatedUsername(username: string): Promise<void> {
