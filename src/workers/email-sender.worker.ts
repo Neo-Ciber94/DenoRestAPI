@@ -1,34 +1,38 @@
-import { ERROR_EVENT_CHANNEL } from "../constants/mod.ts";
 import { connectToRedis } from "../database/redis.ts";
 import { RedisMessageSubscriber } from "../services/redis-pubsub.service.ts";
-import { ErrorReport } from "../types/error-report.ts";
 import { SmtpEmailService } from "../services/smtp-email.service.ts";
 import { Config } from "../config/mod.ts";
 import logger from "../config/logger.ts";
+import { notifyReady } from "../utils/service-workers.ts";
+
+export const SEND_EMAIL_MESSAGE_CHANNEL = "send-email-message";
 
 const worker = self as unknown as Worker;
-const redis = await connectToRedis();
-const subscriber = new RedisMessageSubscriber<ErrorReport>({
-  channels: ERROR_EVENT_CHANNEL,
-  client: redis,
-});
+notifyReady(worker);
 
-worker.postMessage({
-  type: "ready",
+export type SendEmailMessage = {
+  to: string;
+  subject: string;
+  content: string;
+  isHtml?: boolean;
+};
+
+const redis = await connectToRedis();
+const subscriber = new RedisMessageSubscriber<SendEmailMessage>({
+  channels: SEND_EMAIL_MESSAGE_CHANNEL,
+  client: redis,
 });
 
 const emailSender = new SmtpEmailService();
 
 subscriber.onReceive(async (message) => {
-  const { method, status, url } = message;
-  const to = "boniyeh816@dufeed.com";
-
   await emailSender.send({
-    to,
     from: Config.EMAIL_USERNAME,
-    subject: `Error ${status} ocurred`,
-    content: `An error ${status} ocurred on ${method}: ${url}`,
+    to: message.to,
+    subject: message.subject,
+    content: message.content,
+    isHtml: message.isHtml,
   });
 
-  logger.info(`Send email to ${to}`);
+  logger.info(`Send email to ${message.to}`);
 });

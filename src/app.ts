@@ -6,28 +6,18 @@ import taskRouter from "./routes/tasks/task.route.ts";
 import authRouter from "./routes/auth/auth.route.ts";
 import { Config } from "./config/mod.ts";
 import { RedisMessagePublisher } from "./services/redis-pubsub.service.ts";
-import { ErrorReport } from "./types/error-report.ts";
-import { ERROR_EVENT_CHANNEL } from "./constants/mod.ts";
+import {
+  SendEmailMessage,
+  SEND_EMAIL_MESSAGE_CHANNEL,
+} from "./workers/email-sender.worker.ts";
+import { createWorkerServiceAndWait } from "./utils/service-workers.ts";
 
-// WORKER
-const worker = new Worker(
-  new URL("./worker/email-sender.worker.ts", import.meta.url).href,
-  {
-    type: "module",
-    deno: {
-      namespace: true,
-    },
-  } as any
-);
+// prettier-ignore
+await createWorkerServiceAndWait("./workers/email-sender.worker.ts", import.meta.url);
+logger.debug("Email sender service worker started...");
 
-worker.onmessage = (message) => {
-  if (message.type === "ready") {
-    logger.debug("Worker ready");
-  }
-};
-
-const errorPublisher = new RedisMessagePublisher<ErrorReport>({
-  channel: ERROR_EVENT_CHANNEL,
+const errorPublisher = new RedisMessagePublisher<SendEmailMessage>({
+  channel: SEND_EMAIL_MESSAGE_CHANNEL,
 });
 
 const port = Config.PORT || 8000;
@@ -43,10 +33,12 @@ app.use(async (ctx, next) => {
 
   if (response.status >= 400) {
     const { method, url } = request;
+    const { status } = response;
+
     await errorPublisher.publish({
-      status: response.status,
-      url: url.pathname,
-      method,
+      to: "boniyeh816@dufeed.com",
+      subject: `${method} ${url}`,
+      content: `Error ${status} on ${method}: ${url}`,
     });
   }
 });
@@ -60,8 +52,8 @@ app.use(taskRouter.routes());
 app.use(taskRouter.allowedMethods());
 
 app.addEventListener("listen", () => {
-  logger.info(`Listening on port ${port}`);
-  logger.info(`Running on ${Config.ENVIRONMENT} mode`);
+  logger.debug(`Listening on port ${port}`);
+  logger.debug(`Running on ${Config.ENVIRONMENT} mode`);
 });
 
 await app.listen({ port });

@@ -1,5 +1,5 @@
 import * as log from "std/log";
-import { blue, bold, red, yellow } from "std/fmt/colors";
+import { blue, bold, red, yellow, magenta } from "std/fmt/colors";
 import { FileUtils } from "../utils/file-utils.ts";
 
 const lOGS_PATH = "./logs/logs.txt";
@@ -32,7 +32,7 @@ await log.setup({
   },
   loggers: {
     default: {
-      level: "INFO",
+      level: "DEBUG",
       handlers: ["console", "file"],
     },
   },
@@ -48,6 +48,9 @@ function consoleFormatter(logRecord: log.LogRecord): string {
   let msg = `[${logRecord.levelName}] ${logRecord.msg} - ${date}`;
 
   switch (logRecord.level) {
+    case log.LogLevels.DEBUG:
+      msg = magenta(msg);
+      break;
     case log.LogLevels.INFO:
       msg = blue(msg);
       break;
