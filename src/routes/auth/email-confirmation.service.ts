@@ -2,14 +2,18 @@ import { Config } from "../../config/mod.ts";
 import { redisInstance } from "../../database/redis.ts";
 import { ApplicationError } from "../../errors/app.error.ts";
 import { RedisMessagePublisher } from "../../services/redis-pubsub.service.ts";
-import {
-  SendEmailMessage,
-  SEND_EMAIL_MESSAGE_CHANNEL,
-} from "../../workers/email-sender.worker.ts";
 import { User } from "./auth.model.ts";
 import { UserService } from "./user.service.ts";
 
+export const SEND_EMAIL_MESSAGE_CHANNEL = "send-email-message";
 const CONFIRM_EMAIL_TOKEN_KEY = "confirm_email_token";
+
+export type SendEmailMessage = {
+  to: string;
+  subject: string;
+  content: string;
+  isHtml?: boolean;
+};
 
 export class EmailConfirmationService {
   private userService = new UserService();
@@ -36,11 +40,11 @@ export class EmailConfirmationService {
     await redisInstance.set(`${CONFIRM_EMAIL_TOKEN_KEY}:${token}`, user.id, {
       ex: Config.CONFIRMATION_EMAIL_TOKEN_EXPIRES_SECS,
     });
-
     await this.emailPublisher.publish({
       content,
       subject: "Confirm your email address",
       to: user.email,
+      isHtml: true,
     });
   }
 
@@ -63,7 +67,7 @@ export class EmailConfirmationService {
 
   private createConfirmationEmail(user: User, url: string): string {
     return `
-      Hello ${user.username}!,
+      Hello <strong>${user.username}</strong>!,
       
       Confirm your email address by clicking on the link below:
         <a href='${url}'>${url}</a>

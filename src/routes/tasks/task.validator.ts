@@ -17,5 +17,9 @@ const taskUpdateSchema = Schema({
 export const taskUpdateValidator = taskUpdateSchema.destruct();
 
 function noBlank(s: string) {
-  return s.trim().length > 0 ? "no blank" : undefined;
+  if (s.trim().length === 0) {
+    throw new Error("Cannot be blank or empty");
+  }
+
+  return s;
 }

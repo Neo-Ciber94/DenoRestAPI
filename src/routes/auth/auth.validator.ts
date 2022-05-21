@@ -4,7 +4,7 @@ import { Permission } from "./permissions.ts";
 
 const userCreateSchema = Schema({
   username: string.test(noBlank),
-  email: string.test(isEmail),
+  email: string.test(testEmail),
   password: string.test(noBlank).min(3),
 });
 
@@ -27,7 +27,7 @@ export const userChangePasswordValidator = userChangePasswordSchema.destruct();
 const childUserCreateSchema = Schema({
   username: string.test(noBlank),
   password: string.test(noBlank).min(3),
-    email: string.test(isEmail),
+  email: string.test(testEmail),
   permissions: array.of(Schema.enum(Permission)).optional(),
 });
 
@@ -50,9 +50,17 @@ const childUserUpdateSchema = Schema({
 export const childUserUpdateValidator = childUserUpdateSchema.destruct();
 
 function noBlank(s: string) {
-  return s.trim().length > 0 ? "no blank" : undefined;
+  if (s.trim().length === 0) {
+    throw new Error("Cannot be blank or empty");
+  }
+  
+  return s;
 }
 
-function isEmail(s: string) {
-  return !RegexUtils.isValidEmail(s) ? "invalid email" : undefined;
+function testEmail(s: string) {
+  if (!RegexUtils.isValidEmail(s)) {
+    throw new Error(`Invalid email: ${s}`);
+  }
+
+  return s;
 }

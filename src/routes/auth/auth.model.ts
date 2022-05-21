@@ -13,7 +13,10 @@ export interface User extends Entity<string>, Auditable {
   isEmailConfirmed?: boolean;
 }
 
-export type UserProfile = Pick<User, "username" | "id" | "permissions">;
+export type UserProfile = Pick<
+  User,
+  "username" | "email" | "id" | "permissions"
+>;
 
 export interface UserCreate {
   username: string;

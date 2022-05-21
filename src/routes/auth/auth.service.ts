@@ -64,6 +64,7 @@ export class AuthService {
     return {
       id: result.id,
       username: result.username,
+      email: result.email,
       permissions: result.permissions,
     };
   }
@@ -206,6 +207,7 @@ export class AuthService {
     return {
       id: user.id,
       username: user.username,
+      email: user.email,
       permissions: user.permissions,
     };
   }

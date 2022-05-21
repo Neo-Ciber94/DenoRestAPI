@@ -37,6 +37,7 @@ export class UserService implements ApiService<User, string, CreateNewUser> {
 
     const newUser: DeepPartial<User> = {
       username: entity.username,
+      email: entity.email,
       passwordHash: entity.password,
       creationDate: new Date(),
       parentUserId: entity.parentUserId,
