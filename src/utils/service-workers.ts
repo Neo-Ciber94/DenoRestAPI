@@ -1,6 +1,5 @@
 export function createWorkerService(filename: string, base?: string): Worker {
-  const url = new URL(filename, base).href;
-  const worker = new Worker(url, {
+  const worker = new Worker(new URL(filename, base).href, {
     type: "module",
     deno: { namespace: true },
   } as any);
