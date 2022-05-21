@@ -7,7 +7,7 @@ import logger from "../config/logger.ts";
 
 export const SEND_EMAIL_MESSAGE_CHANNEL = "send-email-message";
 
-const worker = self as unknown as Worker;
+//const worker = self as unknown as Worker;
 //notifyReady(worker);
 
 export type SendEmailMessage = {
