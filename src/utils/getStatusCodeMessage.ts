@@ -1,5 +1,5 @@
 export default function getStatusCodeMessage(
-  statusCode: number,
+  statusCode: number
 ): string | null {
   switch (statusCode) {
     case 400:
@@ -10,6 +10,8 @@ export default function getStatusCodeMessage(
       return "Forbidden";
     case 404:
       return "Not Found";
+    case 429:
+      return "Too Many Requests";
     case 500:
       return "Internal Server Error";
     default:

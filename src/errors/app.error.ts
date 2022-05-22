@@ -19,6 +19,10 @@ export class ApplicationError extends Error {
     throw new ApplicationError(404, message);
   }
 
+  static throwTooManyRequests(message?: string): never {
+    throw new ApplicationError(429, message);
+  }
+
   static internalServerError(message?: string): never {
     throw new ApplicationError(500, message);
   }

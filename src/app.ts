@@ -6,6 +6,7 @@ import taskRouter from "./routes/tasks/task.route.ts";
 import authRouter from "./routes/auth/auth.route.ts";
 import { Config } from "./config/mod.ts";
 import { createWorkerService } from "./utils/service-workers.ts";
+import { rateLimiterMiddleware } from "./middlewares/ratelimiter.middleware.ts";
 
 // prettier-ignore
 await createWorkerService("./workers/email-sender.worker.ts", import.meta.url);
@@ -16,6 +17,7 @@ const app = new Application();
 
 app.use(loggerMiddleware);
 app.use(errorMiddleware);
+app.use(rateLimiterMiddleware());
 
 // auth
 app.use(authRouter.routes());
