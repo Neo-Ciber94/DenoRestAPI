@@ -40,6 +40,13 @@ const authRouter = new Router({
     ctx.response.body = result;
     ctx.response.status = 200;
   })
+  .post("/resend-confirmation", async (ctx) => {
+    const authService = new AuthService(ctx.request);
+    const obj = await ctx.request.body({ type: "json" }).value;
+    await authService.resendConfirmationEmail(obj);
+
+    ctx.response.status = 200;
+  })
   .get(`/${Config.CONFIRM_EMAIL_PATHNAME}`, async (ctx) => {
     const authService = new AuthService(ctx.request);
     await authService.confirmUserEmail();

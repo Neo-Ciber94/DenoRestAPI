@@ -32,6 +32,22 @@ import { EmailConfirmationService } from "./email-confirmation.service.ts";
 const ERROR_INVALID_CREDENTIALS = "Invalid username or password";
 const CONFIRMATION_EMAIL_URL = `http://localhost:${Config.PORT}/${Config.CONFIRM_EMAIL_PATHNAME}`;
 
+type CreateNewUser = {
+  username: string;
+  email: string;
+  password: string;
+  permissions: Permission[];
+};
+
+type NewUser = {
+  username: string;
+  email: string;
+  password: string;
+  permissions: Permission[];
+  isLocked: false;
+  isEmailConfirmed: false;
+};
+
 export class AuthService {
   private readonly userService = new UserService();
   private readonly hasher = new PasswordHasher();
@@ -44,6 +60,20 @@ export class AuthService {
     this.currentUserService = new CurrentUserService(request);
   }
 
+  private async createNewUser(createUser: CreateNewUser): Promise<NewUser> {
+    const passwordHash = await this.hasher.hash(createUser.password);
+    const permissions = Array.from(new Set(createUser.permissions));
+
+    return {
+      username: createUser.username,
+      email: createUser.email,
+      password: passwordHash,
+      permissions,
+      isLocked: false,
+      isEmailConfirmed: false,
+    };
+  }
+
   async createUser(userCreate: UserCreate): Promise<UserProfile> {
     const [error, _] = userCreateValidator(userCreate);
 
@@ -51,14 +81,14 @@ export class AuthService {
       ApplicationError.throwBadRequest(error.message);
     }
 
-    const passwordHash = await this.hasher.hash(userCreate.password);
-    const result = await this.userService.create({
+    const newUser = await this.createNewUser({
       username: userCreate.username,
       email: userCreate.email,
-      password: passwordHash,
+      password: userCreate.password,
       permissions: getAllPermissions(),
     });
 
+    const result = await this.userService.create(newUser);
     await this.sendConfirmationEmail(result);
 
     return {
@@ -90,18 +120,17 @@ export class AuthService {
       );
     }
 
-    const passwordHash = await this.hasher.hash(childAccountCreate.password);
-    const permissions = Array.from(
-      new Set<Permission>(childAccountCreate.permissions)
-    );
-
-    const result = await this.userService.create({
-      ...childAccountCreate,
-      password: passwordHash,
-      parentUserId: parentUser.id,
-      permissions,
+    const newUser = await this.createNewUser({
+      username: childAccountCreate.username,
+      email: childAccountCreate.email,
+      password: childAccountCreate.password,
+      permissions: childAccountCreate.permissions,
     });
 
+    const result = await this.userService.create({
+      ...newUser,
+      parentUserId: parentUser.id,
+    });
     await this.sendConfirmationEmail(result);
 
     return {
@@ -242,6 +271,26 @@ export class AuthService {
     if (result) {
       await this.logout();
     }
+  }
+
+  async resendConfirmationEmail(userLogin: UserLogin): Promise<void> {
+    const [error, _] = userLoginValidator(userLogin);
+
+    if (error) {
+      ApplicationError.throwBadRequest(error.message);
+    }
+
+    const user = await this.userService.getByUserName(userLogin.username);
+
+    if (user == null) {
+      ApplicationError.throwBadRequest(ERROR_INVALID_CREDENTIALS);
+    }
+
+    if (user.isLocked === true) {
+      ApplicationError.throwForbidden("User account is locked");
+    }
+
+    await this.sendConfirmationEmail(user);
   }
 
   async setChildUserPassword(

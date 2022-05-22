@@ -1,5 +1,5 @@
 import { Config } from "../../config/mod.ts";
-import { redisInstance } from "../../database/redis.ts";
+import { fullScan, redisInstance } from "../../database/redis.ts";
 import { ApplicationError } from "../../errors/app.error.ts";
 import { RedisMessagePublisher } from "../../services/redis-pubsub.service.ts";
 import { User } from "./auth.model.ts";
@@ -36,10 +36,14 @@ export class EmailConfirmationService {
       ApplicationError.throwBadRequest("User email is already confirmed");
     }
 
+    // We remove the previous confirmation tokens
+    await this.clearSentConfirmationTokens(user);
+
     const content = this.createConfirmationEmail(user, confirmationUrl);
-    await redisInstance.set(`${CONFIRM_EMAIL_TOKEN_KEY}:${token}`, user.id, {
+    await redisInstance.set(keyFor(user, token), user.id, {
       ex: Config.CONFIRMATION_EMAIL_TOKEN_EXPIRES_SECS,
     });
+
     await this.emailPublisher.publish({
       content,
       subject: "Confirm your email address",
@@ -62,7 +66,13 @@ export class EmailConfirmationService {
     }
 
     await this.userService.update({ id: userId, isEmailConfirmed: true });
-    await redisInstance.del(`${CONFIRM_EMAIL_TOKEN_KEY}:${confirmationToken}`);
+    await redisInstance.del(keyFor(user, confirmationToken));
+  }
+
+  private async clearSentConfirmationTokens(user: User): Promise<void> {
+    for await (const key of fullScan(redisInstance, keyFor(user, "*"))) {
+      await redisInstance.del(key);
+    }
   }
 
   private createConfirmationEmail(user: User, url: string): string {
@@ -70,7 +80,12 @@ export class EmailConfirmationService {
       Hello <strong>${user.username}</strong>!,
       
       Confirm your email address by clicking on the link below:
+        <hr/>
         <a href='${url}'>${url}</a>
       `;
   }
+}
+
+function keyFor(user: User, token: string): string {
+  return `${CONFIRM_EMAIL_TOKEN_KEY}:${user.email}:${token}`;
 }

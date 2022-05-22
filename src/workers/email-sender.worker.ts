@@ -2,7 +2,7 @@ import { connectToRedis } from "../database/redis.ts";
 import { RedisMessageSubscriber } from "../services/redis-pubsub.service.ts";
 import { SmtpEmailService } from "../services/smtp-email.service.ts";
 import { Config } from "../config/mod.ts";
-import logger from "../config/logger.ts";
+import logger from "../common/logger.ts";
 import { notifyReady } from "../utils/service-workers.ts";
 import {
   SendEmailMessage,
