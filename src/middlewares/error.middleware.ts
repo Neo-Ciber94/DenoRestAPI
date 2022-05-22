@@ -3,7 +3,7 @@ import { Config } from "../config/mod.ts";
 import { ApplicationError } from "../errors/app.error.ts";
 import getStatusCodeMessage from "../utils/getStatusCodeMessage.ts";
 
-function errorMiddleware(): Middleware {
+function errorHandler(): Middleware {
   return async (ctx, next) => {
     try {
       await next();
@@ -36,4 +36,4 @@ function errorMiddleware(): Middleware {
   };
 }
 
-export default errorMiddleware;
+export default errorHandler;

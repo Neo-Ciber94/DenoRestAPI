@@ -14,7 +14,7 @@ export interface RateLimiterOptions {
   resetOnMs: number;
 }
 
-export function rateLimiterMiddleware(
+export function ratelimiter(
   options?: RateLimiterOptions
 ): Middleware {
   const tokens = new Map<string, RateLimiterToken>();

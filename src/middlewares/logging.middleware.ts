@@ -3,7 +3,7 @@ import { Middleware } from "oak";
 
 const logger = log.getLogger();
 
-function loggerMiddleware(): Middleware {
+function logging(): Middleware {
   return async (ctx, next) => {
     let responseTime = 0;
 
@@ -31,4 +31,4 @@ function loggerMiddleware(): Middleware {
   };
 }
 
-export default loggerMiddleware;
+export default logging;
