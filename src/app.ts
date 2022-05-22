@@ -15,8 +15,8 @@ logger.debug("Email sender service worker started...");
 const port = Config.PORT || 8000;
 const app = new Application();
 
-app.use(loggerMiddleware);
-app.use(errorMiddleware);
+app.use(loggerMiddleware());
+app.use(errorMiddleware());
 app.use(rateLimiterMiddleware());
 
 // auth
