@@ -41,7 +41,6 @@ export class EmailConfirmationService {
       ex: Config.CONFIRMATION_EMAIL_TOKEN_EXPIRES_SECS,
     });
 
-    console.log(content);
     await this.emailPublisher.publish({
       content,
       subject: "Confirm your email address",

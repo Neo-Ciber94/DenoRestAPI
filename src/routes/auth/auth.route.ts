@@ -54,7 +54,7 @@ const authRouter = new Router({
     ctx.response.status = 200;
     ctx.response.type = "text/html";
     ctx.response.body = `
-      <h4>Your email had been confirmed confirmed</h4>
+      <h4>Your email had been confirmed!</h4>
     `;
   })
 
