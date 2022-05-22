@@ -36,14 +36,12 @@ export class EmailConfirmationService {
       ApplicationError.throwBadRequest("User email is already confirmed");
     }
 
-    // We remove the previous confirmation tokens
-    await this.clearSentConfirmationTokens(user);
-
     const content = this.createConfirmationEmail(user, confirmationUrl);
-    await redisInstance.set(keyFor(user, token), user.id, {
+    await redisInstance.set(keyFor(token), user.id, {
       ex: Config.CONFIRMATION_EMAIL_TOKEN_EXPIRES_SECS,
     });
 
+    console.log(content);
     await this.emailPublisher.publish({
       content,
       subject: "Confirm your email address",
@@ -53,9 +51,7 @@ export class EmailConfirmationService {
   }
 
   async confirmUserEmail(confirmationToken: string): Promise<void> {
-    const userId = await redisInstance.get(
-      `${CONFIRM_EMAIL_TOKEN_KEY}:${confirmationToken}`
-    );
+    const userId = await redisInstance.get(keyFor(confirmationToken));
     if (!userId) {
       ApplicationError.throwBadRequest("Invalid confirmation token");
     }
@@ -66,13 +62,7 @@ export class EmailConfirmationService {
     }
 
     await this.userService.update({ id: userId, isEmailConfirmed: true });
-    await redisInstance.del(keyFor(user, confirmationToken));
-  }
-
-  private async clearSentConfirmationTokens(user: User): Promise<void> {
-    for await (const key of fullScan(redisInstance, keyFor(user, "*"))) {
-      await redisInstance.del(key);
-    }
+    await redisInstance.del(keyFor(confirmationToken));
   }
 
   private createConfirmationEmail(user: User, url: string): string {
@@ -86,6 +76,6 @@ export class EmailConfirmationService {
   }
 }
 
-function keyFor(user: User, token: string): string {
-  return `${CONFIRM_EMAIL_TOKEN_KEY}:${user.email}:${token}`;
+function keyFor(token: string): string {
+  return `${CONFIRM_EMAIL_TOKEN_KEY}:${token}`;
 }
