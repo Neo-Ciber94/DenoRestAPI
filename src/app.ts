@@ -5,10 +5,10 @@ import errorMiddleware from "./middlewares/error.middleware.ts";
 import taskRouter from "./routes/tasks/task.route.ts";
 import authRouter from "./routes/auth/auth.route.ts";
 import { Config } from "./config/mod.ts";
-import { createWorkerServiceAndWait } from "./utils/service-workers.ts";
+import { createWorkerService } from "./utils/service-workers.ts";
 
 // prettier-ignore
-await createWorkerServiceAndWait("./workers/email-sender.worker.ts", import.meta.url);
+await createWorkerService("./workers/email-sender.worker.ts", import.meta.url);
 logger.debug("Email sender service worker started...");
 
 const port = Config.PORT || 8000;
