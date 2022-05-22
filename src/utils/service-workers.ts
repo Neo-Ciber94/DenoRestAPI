@@ -17,6 +17,11 @@ export async function createWorkerService(
   return worker;
 }
 
+/**
+ * Waits until the worker receives a ready signal.
+ * @param worker The worker to wait for.
+ * @returns A promise that resolves when the worker is ready.
+ */
 export function waitReady(worker: Worker): Promise<void> {
   return new Promise((resolve) => {
     worker.onmessage = (message) => {
@@ -28,6 +33,10 @@ export function waitReady(worker: Worker): Promise<void> {
   });
 }
 
+/**
+ * Sends a ready signal to the worker.
+ * @param worker The worker to send a message to.
+ */
 export function notifyReady(worker: Worker) {
   worker.postMessage({
     type: "ready",
