@@ -1,3 +1,6 @@
+type ModuleObject = Record<string, unknown>;
+type Fn = () => unknown;
+
 enum State {
   Loading = 1,
   Ready = 2,
@@ -15,10 +18,10 @@ export type JsonValue =
   | Array<JsonValue>;
 
 export type ModuleImport =
-  | object
-  | Function
-  | Promise<object>
-  | Promise<Function>;
+  | ModuleObject
+  | Fn
+  | Promise<ModuleObject>
+  | Promise<Fn>;
 
 /**
  * Options used to configure a `BackgroundWorker`.
