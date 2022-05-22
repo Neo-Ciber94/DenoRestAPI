@@ -1,4 +1,4 @@
-import logger from "./config/logger.ts";
+import logger from "./common/logger.ts";
 import { Application } from "oak";
 import logging from "./middlewares/logging.middleware.ts";
 import errorHandler from "./middlewares/error.middleware.ts";
