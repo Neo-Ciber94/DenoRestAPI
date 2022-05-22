@@ -67,11 +67,10 @@ export class EmailConfirmationService {
 
   private createConfirmationEmail(user: User, url: string): string {
     return `
-      Hello <strong>${user.username}</strong>!,
-      
-      Confirm your email address by clicking on the link below:
-        <br/>
-        <a href='${url}'>${url}</a>
+      <div>Hello <strong>${user.username}</strong>!,<div>
+      <div>Confirm your email address by clicking on the link below:</div>
+      <br/>
+      <a href='${url}'>${url}</a>
       `;
   }
 }

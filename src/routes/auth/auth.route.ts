@@ -48,9 +48,14 @@ const authRouter = new Router({
     ctx.response.status = 200;
   })
   .get(`/${Config.CONFIRM_EMAIL_PATHNAME}`, async (ctx) => {
+    console.log(ctx.params);
     const authService = new AuthService(ctx.request);
     await authService.confirmUserEmail();
     ctx.response.status = 200;
+    ctx.response.type = "text/html";
+    ctx.response.body = `
+      <h4>Your email had been confirmed confirmed</h4>
+    `;
   })
 
   // Child user

@@ -30,7 +30,7 @@ import { getAllPermissions, Permission } from "./permissions.ts";
 import { EmailConfirmationService } from "./email-confirmation.service.ts";
 
 const ERROR_INVALID_CREDENTIALS = "Invalid username or password";
-const CONFIRMATION_EMAIL_URL = `http://localhost:${Config.PORT}/${Config.CONFIRM_EMAIL_PATHNAME}`;
+const CONFIRMATION_EMAIL_URL = `http://localhost:${Config.PORT}/auth/${Config.CONFIRM_EMAIL_PATHNAME}`;
 
 type CreateNewUser = {
   username: string;
