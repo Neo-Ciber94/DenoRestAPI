@@ -16,8 +16,8 @@ const port = Config.PORT || 8000;
 const app = new Application();
 
 app.use(logging());
-app.use(errorHandler());
 app.use(ratelimiter());
+app.use(errorHandler());
 
 // auth
 app.use(authRouter.routes());
