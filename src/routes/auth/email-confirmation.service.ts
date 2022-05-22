@@ -1,5 +1,5 @@
 import { Config } from "../../config/mod.ts";
-import { fullScan, redisInstance } from "../../database/redis.ts";
+import { redisInstance } from "../../database/redis.ts";
 import { ApplicationError } from "../../errors/app.error.ts";
 import { RedisMessagePublisher } from "../../services/redis-pubsub.service.ts";
 import { User } from "./auth.model.ts";
@@ -70,7 +70,7 @@ export class EmailConfirmationService {
       Hello <strong>${user.username}</strong>!,
       
       Confirm your email address by clicking on the link below:
-        <hr/>
+        <br/>
         <a href='${url}'>${url}</a>
       `;
   }
