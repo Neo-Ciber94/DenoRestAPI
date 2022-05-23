@@ -2,8 +2,8 @@ import { Middleware, Request as OakRequest } from "oak";
 import {
   CurrentUserService,
   UserPayload,
-} from "../routes/auth/current-user.service.ts";
-import { LoggedUserService } from "../routes/auth/logged-user.service.ts";
+} from "../server/auth/current-user.service.ts";
+import { LoggedUserService } from "../server/auth/logged-user.service.ts";
 
 export type Pattern = string | RegExp;
 

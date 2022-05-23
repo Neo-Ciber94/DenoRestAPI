@@ -7,7 +7,7 @@ import { notifyReady } from "../utils/service-workers.ts";
 import {
   SendEmailMessage,
   SEND_EMAIL_MESSAGE_CHANNEL,
-} from "../routes/auth/email-confirmation.service.ts";
+} from "../server/auth/email-confirmation.service.ts";
 
 const worker = self as unknown as Worker;
 notifyReady(worker);
