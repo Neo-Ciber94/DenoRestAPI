@@ -4,6 +4,7 @@
     "std/path": "https://deno.land/std@0.138.0/path/mod.ts",
     "std/log": "https://deno.land/std@0.138.0/log/mod.ts",
     "std/assert": "https://deno.land/std@0.138.0/testing/asserts.ts",
+    "std/fs": "https://deno.land/std@0.137.0/fs/mod.ts",
     "oak": "https://deno.land/x/oak@v10.5.1/mod.ts",
     "bcrypt": "https://deno.land/x/bcrypt@v0.3.0/mod.ts",
     "redis": "https://deno.land/x/redis@v0.25.5/mod.ts",
@@ -14,6 +15,7 @@
     "denomailer": "https://deno.land/x/denomailer@1.0.1/mod.ts",
     "std/uuid": "https://deno.land/std@0.139.0/uuid/mod.ts",
     "cors": "https://deno.land/x/cors@v1.2.2/mod.ts",
-    "compress": "https://deno.land/x/oak_compress@v0.0.2/mod.ts"
+    "compress": "https://deno.land/x/oak_compress@v0.0.2/mod.ts",
+    "nano_jsx": "https://deno.land/x/nano_jsx@v0.0.30"
   }
 }
