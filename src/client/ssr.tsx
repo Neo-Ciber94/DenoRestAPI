@@ -2,6 +2,7 @@ import { Application } from "oak";
 import * as path from "std/path";
 import * as fs from "std/fs";
 import * as Nano from "nano_jsx";
+import { h } from "nano_jsx";
 const { Helmet } = Nano;
 
 export interface ViewRoute {
@@ -15,7 +16,7 @@ export interface PageRouterOptions {
 
 export async function setupPageViews(
   app: Application,
-  options: PageRouterOptions = {}
+  options: PageRouterOptions = {},
 ) {
   const { viewsPath = "pages" } = options;
   const basePath = path.join(Deno.cwd(), "src", viewsPath);
@@ -61,7 +62,19 @@ async function renderRouteToHtml(viewRoute: ViewRoute) {
     throw new Error(`Expected react component`);
   }
 
-  // const app = Nano.renderSSR(<JsxComponent />);
-  // const { body, head, footer, attributes } = Helmet.SSR(app);
-  return "";
+  const app = Nano.renderSSR(<JsxComponent />);
+  const { body, head, footer, attributes } = Helmet.SSR(app);
+  return `
+  <!DOCTYPE html>
+  <html ${attributes.html.toString()}>
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      ${head.join("\n")}
+    </head>
+    <body ${attributes.body.toString()}>
+      ${body}
+      ${footer.join("\n")}
+    </body>
+  </html`;
 }
