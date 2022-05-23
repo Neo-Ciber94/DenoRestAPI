@@ -7,6 +7,8 @@ import authRouter from "./routes/auth/auth.route.ts";
 import { Config } from "./config/mod.ts";
 import { createWorkerService } from "./utils/service-workers.ts";
 import { ratelimiter } from "./middlewares/ratelimiter.middleware.ts";
+import { brotli, deflate, gzip } from "compress";
+import { oakCors as cors } from "cors";
 
 // prettier-ignore
 await createWorkerService("./workers/email-sender.worker.ts", import.meta.url);
@@ -17,8 +19,14 @@ const app = new Application();
 
 // Middlewares
 app.use(errorHandler());
+app.use(cors());
 app.use(logging());
 app.use(ratelimiter());
+
+// Compression
+app.use(brotli());
+app.use(gzip());
+app.use(deflate());
 
 // auth
 app.use(authRouter.routes());
