@@ -8,7 +8,7 @@
     "oak": "https://deno.land/x/oak@v10.5.1/mod.ts",
     "bcrypt": "https://deno.land/x/bcrypt@v0.3.0/mod.ts",
     "redis": "https://deno.land/x/redis@v0.25.5/mod.ts",
-    "djwt": "https://deno.land/x/djwt@v2.2/mod.ts",
+    "djwt": "https://deno.land/x/djwt@v2.4/mod.ts",
     "computed_types": "https://denoporter.sirjosh.workers.dev/v1/deno.land/x/computed_types/src/index.ts",
     "dotenv": "https://deno.land/x/dotenv@v3.2.0/mod.ts",
     "dotenv/load": "https://deno.land/x/dotenv@v3.2.0/load.ts",
@@ -16,6 +16,6 @@
     "std/uuid": "https://deno.land/std@0.139.0/uuid/mod.ts",
     "cors": "https://deno.land/x/cors@v1.2.2/mod.ts",
     "compress": "https://deno.land/x/oak_compress@v0.0.2/mod.ts",
-    "nano_jsx": "https://deno.land/x/nano_jsx@v0.0.30"
+    "nano_jsx": "https://deno.land/x/nano_jsx@v0.0.30/mod.ts"
   }
 }

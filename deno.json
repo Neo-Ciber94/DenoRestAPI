@@ -7,6 +7,16 @@
       ]
     }
   },
+  "compilerOptions": {
+    "lib": [
+      "deno.ns",
+      "dom",
+      "dom.iterable",
+      "dom.asynciterable"
+    ],
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment"
+  },
   "tasks": {
     "run": "deno run --allow-net --allow-env --allow-read --allow-write --import-map=./import-map.json src/main.ts",
     "dev": "deno run --unstable --allow-net --allow-env --allow-read --allow-write --import-map=./import-map.json --watch src/main.ts",
