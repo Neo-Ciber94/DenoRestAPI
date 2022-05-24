@@ -32,7 +32,7 @@ jobs:
           deno-version: v1.21.2
           
       - name: Run checker
-        run: deno check src/app.ts
+        run: deno check src/main.ts
         
       - name: Run linter
         run: deno lint
