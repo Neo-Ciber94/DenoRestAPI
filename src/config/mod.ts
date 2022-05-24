@@ -9,6 +9,7 @@ export enum Environment {
 // prettier-ignore
 export namespace Config {
   export const ENVIRONMENT = getEnvOrDefault("ENVIRONMENT", Environment.DEVELOPMENT);
+  export const API_URL = getEnvOrDefault("API_URL", "/api");
   export const PORT = getEnvMap("PORT", Number);
   export const CONSOLE_LOG_ERRORS = getEnvOrDefault("CONSOLE_LOG_ERRORS", "false") === "true";
   export const REDIS_HOST = getEnvOrThrow("REDIS_HOST");

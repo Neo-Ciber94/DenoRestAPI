@@ -8,7 +8,7 @@ import { ratelimiter } from "./middlewares/ratelimiter.middleware.ts";
 import { brotli, deflate, gzip } from "compress";
 import { oakCors as cors } from "cors";
 import apiRouter from "./server/api.route.ts";
-import { setupPageViews } from "./client/ssr.ts";
+import { useServerSideRoutes } from "./client/ssr.tsx";
 
 // prettier-ignore
 await createWorkerService("./workers/email-sender.worker.ts", import.meta.url);
@@ -33,7 +33,7 @@ app.use(apiRouter.routes());
 app.use(apiRouter.allowedMethods());
 
 // Views
-await setupPageViews(app);
+await useServerSideRoutes(app);
 
 app.addEventListener("listen", () => {
   logger.debug(`Listening on port ${port}`);
