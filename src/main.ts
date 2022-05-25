@@ -8,7 +8,7 @@ import { ratelimiter } from "./middlewares/ratelimiter.middleware.ts";
 import { brotli, deflate, gzip } from "compress";
 import { oakCors as cors } from "cors";
 import apiRouter from "./server/api.route.ts";
-import { useServerSideRoutes } from "./client/ssr.tsx";
+import { useServerSideRoutes } from "./ssr/mod.tsx";
 
 // prettier-ignore
 await createWorkerService("./workers/email-sender.worker.ts", import.meta.url);
