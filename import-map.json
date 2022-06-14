@@ -18,6 +18,6 @@
     "cors": "https://deno.land/x/cors@v1.2.2/mod.ts",
     "compress": "https://deno.land/x/oak_compress@v0.0.2/mod.ts",
     "nano_jsx": "https://deno.land/x/nano_jsx@v0.0.30/mod.ts",
-    "ssr": "src/ssr/mod.tsx"
+    "ssr": "./src/ssr/mod.tsx"
   }
 }

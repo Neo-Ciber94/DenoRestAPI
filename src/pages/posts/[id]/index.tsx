@@ -3,6 +3,7 @@ import { h } from "nano_jsx";
 
 export default function ViewPost() {
   const routeData = useRouteParams();
+  console.log(routeData);
 
   return (
     <div>

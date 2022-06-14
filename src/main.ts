@@ -1,5 +1,5 @@
 import logger from "./common/logger.ts";
-import { Application } from "oak";
+import { Application, Router } from "oak";
 import logging from "./middlewares/logging.middleware.ts";
 import errorHandler from "./middlewares/error.middleware.ts";
 import { Config } from "./config/mod.ts";
@@ -9,6 +9,7 @@ import { brotli, deflate, gzip } from "compress";
 import { oakCors as cors } from "cors";
 import apiRouter from "./server/api.route.ts";
 import { useServerSideRoutes } from "./ssr/mod.tsx";
+import staticFiles from "./middlewares/static-files.middleware.ts";
 
 // prettier-ignore
 await createWorkerService("./workers/email-sender.worker.ts", import.meta.url);
@@ -22,6 +23,7 @@ app.use(errorHandler());
 app.use(cors());
 app.use(logging());
 app.use(ratelimiter());
+app.use(staticFiles({ root: "./src/public", prefix: "/static" }));
 
 // Compression
 app.use(brotli());
