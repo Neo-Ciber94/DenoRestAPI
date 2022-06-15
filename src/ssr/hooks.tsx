@@ -7,11 +7,14 @@ export type RouteParams = {
 };
 
 export function useRouteParams(): RouteParams {
-  if (typeof window === "undefined") {
+  if (
+    typeof document === "undefined" ||
+    typeof document.getElementById !== "function"
+  ) {
     return { params: {}, query: {} };
   }
 
-  const element = window.document.getElementById(ROUTE_PARAMS);
+  const element = document.getElementById(ROUTE_PARAMS);
   if (element == null) {
     throw new Error(`Expected element with id '${ROUTE_PARAMS}'`);
   }
