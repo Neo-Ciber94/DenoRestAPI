@@ -7,7 +7,13 @@ import { RequestWithParams } from "./types.ts";
 import { GET_SERVER_DATA_FUNCTION, ROUTE_PARAMS } from "./constants.ts";
 import { ensureDir } from "std/fs";
 import { bundle } from "./bundle.ts";
+import * as sha1 from "sha1";
+import * as base64 from "base64";
+import * as path from "std/path";
 const { Helmet } = Nano;
+
+const SERVER_ADDRESS = "http://localhost:8000";
+const BUNDLE_ADDRESS = `${SERVER_ADDRESS}/static/bundle`;
 
 export interface ServerSideRoutesOptions {
   viewsPath?: string;
@@ -28,6 +34,7 @@ export async function useServerSideRoutes(
   const routerMap = new Map<string | undefined, Router>();
 
   console.log(viewsRoutes);
+
   for (const view of viewsRoutes) {
     const router = routerMap.get(view.parent) || new Router({
       prefix: view.parent,
@@ -40,6 +47,9 @@ export async function useServerSideRoutes(
 
     routerMap.set(view.parent, router);
   }
+
+  // Generate the hydrate bundle files asynchronously
+  await Promise.all(viewsRoutes.map(generateHydrateScript));
 
   for (const router of routerMap.values()) {
     app.use(router.routes());
@@ -87,11 +97,10 @@ async function renderRouteToHtml(
 
   // prettier-ignore
   const app = Nano.renderSSR(<JsxComponent data={routeData} />, { pathname });
-  const hydrateScriptPath = await generateHydrateScript(viewRoute);
+  const hydrateScriptPath = getHydrateFileName(viewRoute);
   const { body, head, footer, attributes } = Helmet.SSR(app);
 
   const q = JSON.stringify({ params, query });
-  console.log(q);
 
   return `
   <!DOCTYPE html>
@@ -104,23 +113,27 @@ async function renderRouteToHtml(
     <body ${attributes.body.toString()}>
       ${body}
       ${footer.join("\n")}
-      <script src="${hydrateScriptPath}"/>
-      <script>
-        window.${ROUTE_PARAMS} = ${q};
+      <script src="${BUNDLE_ADDRESS}/${hydrateScriptPath}.bundle.js"/>
+      <script id="${ROUTE_PARAMS}" type="application/json">
+        ${q}
       </script>
     </body>
   </html`;
 }
 
 async function generateHydrateScript(view: ViewRoute): Promise<string> {
-  const filename = `${view.parent ?? ""}${view.pathname}`.replaceAll("/", "_");
-  const outdir = `${Deno.cwd()}/src/public/bundle/`;
+  const pagesPath = path.join(Deno.cwd(), "src");
+  const filename = getHydrateFileName(view);
+  const outdir = path.join(Deno.cwd(), "/src/public/bundle/");
+  const componentPath = path
+    .relative(pagesPath, view.component)
+    .replaceAll("\\", "/");
 
   await ensureDir(outdir);
 
   const src = `
     import { hydrate } from "nano_jsx";
-    import Component from "${view.component}";
+    import Component from "../../${componentPath}";
 
     hydrate(Component, document.body);`;
 
@@ -129,8 +142,15 @@ async function generateHydrateScript(view: ViewRoute): Promise<string> {
     outdir,
   });
 
-  const outfileName = `${outdir}${filename}.js`;
-  await Deno.writeTextFile(outfileName, bundledScript);
-  console.log(`Wrote ${outfileName}`);
+  const outfileName = `${filename}.bundle.js`;
+  const outfilePath = path.join(outdir, outfileName);
+  await Deno.writeTextFile(outfilePath, bundledScript);
   return outfileName;
+}
+
+function getHydrateFileName(view: ViewRoute): string {
+  const filename = `${view.parent ?? ""}${view.pathname}`;
+  const sha1Hash = sha1.sha1(filename, "utf8", "hex").toString();
+  const base64Hash = base64.Base64.fromString(sha1Hash).toString();
+  return base64Hash.replaceAll("=", "");
 }

@@ -18,8 +18,8 @@
     "jsxFragmentFactory": "Fragment"
   },
   "tasks": {
-    "run": "deno run --allow-net --allow-env --allow-read --allow-write --import-map=./import-map.json src/main.ts",
-    "dev": "deno run --unstable --allow-net --allow-env --allow-read --allow-write --import-map=./import-map.json --watch src/main.ts",
+    "run": "deno run --allow-net --allow-run --allow-env --allow-read --allow-write --import-map=./import-map.json src/main.ts",
+    "dev": "deno run --unstable --allow-net --allow-run --allow-env --allow-read --allow-write --import-map=./import-map.json --watch src/main.ts",
     "test": "deno test --allow-net",
     "docker:build": "docker build -t deno-restapi .",
     "docker:run": "docker run --name deno-restapi -dp 8080:8080 --net bridge --restart=always --env-file=.env deno-restapi",

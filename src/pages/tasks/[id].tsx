@@ -12,5 +12,5 @@ export function getServerSideProps(req: RequestWithParams) {
 type Data = InferServerSideProps<typeof getServerSideProps>;
 
 export default function GoodBye({ data }: Data) {
-  return <h2 style="color: red">Hello {data.hello}</h2>;
+  return <h2 style="color: red">Hello {data}</h2>;
 }
