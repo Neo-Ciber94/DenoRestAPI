@@ -527,21 +527,11 @@ const regular = function(statics) {
 };
 const __default = false ? build : regular;
 __default.bind(h);
-const ROUTE_PARAMS = "__ROUTE_PARAMS__";
-function useRouteParams() {
-    const routeData = window[ROUTE_PARAMS];
-    if (routeData == null) {
-        return {
-            params: {},
-            query: {}
-        };
-    }
-    return JSON.parse(routeData);
+function Home() {
+    console.log("Hello!");
+    return h("h1", {
+        class: "red"
+    }, "Hello World!");
 }
-function ViewPost() {
-    const routeData = useRouteParams();
-    console.log(routeData);
-    return h("div", null, h("h1", null, "View Posts with Id"), h("pre", null, "Params: ", JSON.stringify(routeData, null, 2)));
-}
-hydrate(ViewPost, document.body);
+hydrate(Home, document.getElementById("root"));
 

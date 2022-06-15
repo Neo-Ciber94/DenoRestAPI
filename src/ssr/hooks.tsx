@@ -1,6 +1,5 @@
 import { ROUTE_PARAMS } from "./constants.ts";
 import { StringMap } from "./types.ts";
-import { isBrowser } from "./utils.ts";
 
 export type RouteParams = {
   params: StringMap;
@@ -8,10 +7,20 @@ export type RouteParams = {
 };
 
 export function useRouteParams(): RouteParams {
-  const routeData = (window as any)[ROUTE_PARAMS] as string;
-  if (routeData == null) {
+  if (typeof window === "undefined") {
     return { params: {}, query: {} };
   }
 
-  return JSON.parse(routeData);
+  const element = window.document.getElementById(ROUTE_PARAMS);
+  if (element == null) {
+    throw new Error(`Expected element with id '${ROUTE_PARAMS}'`);
+  }
+
+  const json = element.textContent;
+  if (json == null) {
+    return { params: {}, query: {} };
+  }
+
+  const { params, query } = JSON.parse(json);
+  return { params, query };
 }

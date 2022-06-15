@@ -527,11 +527,35 @@ const regular = function(statics) {
 };
 const __default = false ? build : regular;
 __default.bind(h);
-function Home() {
-    console.log("Hello!");
-    return h("h1", {
-        class: "red"
-    }, "Hello World!");
+const ROUTE_PARAMS = "__ROUTE_PARAMS__";
+function useRouteParams() {
+    if (typeof window === "undefined") {
+        return {
+            params: {},
+            query: {}
+        };
+    }
+    const element = window.document.getElementById(ROUTE_PARAMS);
+    if (element == null) {
+        throw new Error(`Expected element with id '${ROUTE_PARAMS}'`);
+    }
+    const json = element.textContent;
+    if (json == null) {
+        return {
+            params: {},
+            query: {}
+        };
+    }
+    const { params , query  } = JSON.parse(json);
+    return {
+        params,
+        query
+    };
 }
-hydrate(Home, document.body);
+function ViewPost() {
+    const routeData = useRouteParams();
+    console.log(routeData);
+    return h("div", null, h("h1", null, "View Posts with Id"), h("pre", null, "Params: ", JSON.stringify(routeData, null, 2)));
+}
+hydrate(ViewPost, document.getElementById("root"));
 

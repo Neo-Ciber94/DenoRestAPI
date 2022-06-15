@@ -529,19 +529,33 @@ const __default = false ? build : regular;
 __default.bind(h);
 const ROUTE_PARAMS = "__ROUTE_PARAMS__";
 function useRouteParams() {
-    const routeData = window[ROUTE_PARAMS];
-    if (routeData == null) {
+    if (typeof window === "undefined") {
         return {
             params: {},
             query: {}
         };
     }
-    return JSON.parse(routeData);
+    const element = window.document.getElementById(ROUTE_PARAMS);
+    if (element == null) {
+        throw new Error(`Expected element with id '${ROUTE_PARAMS}'`);
+    }
+    const json = element.textContent;
+    if (json == null) {
+        return {
+            params: {},
+            query: {}
+        };
+    }
+    const { params , query  } = JSON.parse(json);
+    return {
+        params,
+        query
+    };
 }
 function ViewCommentId() {
     const routeData = useRouteParams();
     console.log(routeData);
     return h("div", null, h("h1", null, "Posts Comment with Id"), JSON.stringify(routeData, null, 2));
 }
-hydrate(ViewCommentId, document.body);
+hydrate(ViewCommentId, document.getElementById("root"));
 

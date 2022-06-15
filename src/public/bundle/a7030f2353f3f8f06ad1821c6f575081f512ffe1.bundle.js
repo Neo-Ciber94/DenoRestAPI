@@ -530,5 +530,5 @@ __default.bind(h);
 function Posts() {
     return h("h1", null, "Posts");
 }
-hydrate(Posts, document.body);
+hydrate(Posts, document.getElementById("root"));
 

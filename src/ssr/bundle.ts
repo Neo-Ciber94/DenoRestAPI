@@ -26,11 +26,6 @@ export async function bundle(
   }
 
   await Deno.writeTextFile(filepath, src);
-  console.log(filepath);
-
-  // const filename = path
-  //   .basename(filepath)
-  //   .slice(0, path.extname(filepath).length);
 
   try {
     const process = Deno.run({

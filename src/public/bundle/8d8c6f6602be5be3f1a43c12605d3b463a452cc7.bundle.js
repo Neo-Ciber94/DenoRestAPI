@@ -527,10 +527,10 @@ const regular = function(statics) {
 };
 const __default = false ? build : regular;
 __default.bind(h);
-function Index() {
-    return h("h1", {
-        style: "color: green"
-    }, "This is the index");
+function GoodBye(data) {
+    return h("h2", {
+        style: "color: red"
+    }, "Hello ", JSON.stringify(data));
 }
-hydrate(Index, document.body);
+hydrate(GoodBye, document.getElementById("root"));
 

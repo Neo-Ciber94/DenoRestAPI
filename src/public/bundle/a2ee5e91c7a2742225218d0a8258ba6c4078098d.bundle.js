@@ -525,12 +525,7 @@ const regular = function(statics) {
     tmp = evaluate(this, tmp.get(statics) || (tmp.set(statics, tmp = build(statics)), tmp), arguments, []);
     return tmp.length > 1 ? tmp : tmp[0];
 };
-const __default = false ? build : regular;
-__default.bind(h);
-function GoodBye({ data  }) {
-    return h("h2", {
-        style: "color: red"
-    }, "Hello ", data);
-}
-hydrate(GoodBye, document.body);
+const __default1 = false ? build : regular;
+__default1.bind(h);
+hydrate(__default, document.getElementById("root"));
 

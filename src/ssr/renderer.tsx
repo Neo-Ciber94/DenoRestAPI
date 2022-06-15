@@ -10,6 +10,7 @@ import { bundle } from "./bundle.ts";
 import * as sha1 from "sha1";
 import * as base64 from "base64";
 import * as path from "std/path";
+import { Parallel } from "../utils/parallel.ts";
 const { Helmet } = Nano;
 
 const SERVER_ADDRESS = "http://localhost:8000";
@@ -49,8 +50,9 @@ export async function useServerSideRoutes(
   }
 
   // Generate the hydrate bundle files asynchronously
-  await Promise.all(viewsRoutes.map(generateHydrateScript));
+  await Parallel.forEach(viewsRoutes, (v) => generateHydrateScript(v));
 
+  // Setup the routes
   for (const router of routerMap.values()) {
     app.use(router.routes());
     app.use(router.allowedMethods());
@@ -101,6 +103,7 @@ async function renderRouteToHtml(
   const { body, head, footer, attributes } = Helmet.SSR(app);
 
   const q = JSON.stringify({ params, query });
+  console.log({ q });
 
   return `
   <!DOCTYPE html>
@@ -111,12 +114,12 @@ async function renderRouteToHtml(
       ${head.join("\n")}
     </head>
     <body ${attributes.body.toString()}>
-      ${body}
+      <div id='root'>
+        ${body}
+      </div>
       ${footer.join("\n")}
-      <script src="${BUNDLE_ADDRESS}/${hydrateScriptPath}.bundle.js"/>
-      <script id="${ROUTE_PARAMS}" type="application/json">
-        ${q}
-      </script>
+      <script id="${ROUTE_PARAMS}" type="application/json">${q}</script>
+      <script src="${BUNDLE_ADDRESS}/${hydrateScriptPath}.bundle.js" />
     </body>
   </html`;
 }
@@ -135,7 +138,7 @@ async function generateHydrateScript(view: ViewRoute): Promise<string> {
     import { hydrate } from "nano_jsx";
     import Component from "../../${componentPath}";
 
-    hydrate(Component, document.body);`;
+    hydrate(Component, document.getElementById("root"));`;
 
   const bundledScript = await bundle(src, {
     filename,
@@ -151,6 +154,5 @@ async function generateHydrateScript(view: ViewRoute): Promise<string> {
 function getHydrateFileName(view: ViewRoute): string {
   const filename = `${view.parent ?? ""}${view.pathname}`;
   const sha1Hash = sha1.sha1(filename, "utf8", "hex").toString();
-  const base64Hash = base64.Base64.fromString(sha1Hash).toString();
-  return base64Hash.replaceAll("=", "");
+  return sha1Hash;
 }

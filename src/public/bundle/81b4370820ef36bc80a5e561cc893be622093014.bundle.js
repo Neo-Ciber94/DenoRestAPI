@@ -525,7 +525,12 @@ const regular = function(statics) {
     tmp = evaluate(this, tmp.get(statics) || (tmp.set(statics, tmp = build(statics)), tmp), arguments, []);
     return tmp.length > 1 ? tmp : tmp[0];
 };
-const __default1 = false ? build : regular;
-__default1.bind(h);
-hydrate(__default, document.body);
+const __default = false ? build : regular;
+__default.bind(h);
+function Index() {
+    return h("h1", {
+        style: "color: green"
+    }, "This is the index");
+}
+hydrate(Index, document.getElementById("root"));
 
