@@ -1,5 +1,5 @@
 import logger from "./common/logger.ts";
-import { Application, Router } from "oak";
+import { Application } from "oak";
 import logging from "./middlewares/logging.middleware.ts";
 import errorHandler from "./middlewares/error.middleware.ts";
 import { Config } from "./config/mod.ts";
@@ -12,8 +12,8 @@ import { useServerSideRoutes } from "./ssr/mod.tsx";
 import staticFiles from "./middlewares/static-files.middleware.ts";
 
 // prettier-ignore
-//await createWorkerService("./workers/email-sender.worker.ts", import.meta.url);
-//logger.debug("Email sender service worker started...");
+await createWorkerService("./workers/email-sender.worker.ts", import.meta.url);
+logger.debug("Email sender service worker started...");
 
 const port = Config.PORT || 8000;
 const app = new Application();

@@ -1,4 +1,4 @@
-import { Middleware, Router } from "oak";
+import { Middleware } from "oak";
 
 export interface StaticFilesOptions {
   root: string;
