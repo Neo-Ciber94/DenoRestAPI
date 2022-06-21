@@ -12,8 +12,8 @@ import { useServerSideRoutes } from "./ssr/mod.tsx";
 import staticFiles from "./middlewares/static-files.middleware.ts";
 
 // prettier-ignore
-await createWorkerService("./workers/email-sender.worker.ts", import.meta.url);
-logger.debug("Email sender service worker started...");
+//await createWorkerService("./workers/email-sender.worker.ts", import.meta.url);
+//logger.debug("Email sender service worker started...");
 
 const port = Config.PORT || 8000;
 const app = new Application();
