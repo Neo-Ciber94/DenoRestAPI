@@ -3,7 +3,7 @@ import { Application } from "oak";
 import logging from "./middlewares/logging.middleware.ts";
 import errorHandler from "./middlewares/error.middleware.ts";
 import { Config } from "./config/mod.ts";
-import { createWorkerService } from "./utils/service-workers.ts";
+//import { createWorkerService } from "./utils/service-workers.ts";
 import { ratelimiter } from "./middlewares/ratelimiter.middleware.ts";
 import { brotli, deflate, gzip } from "compress";
 import { oakCors as cors } from "cors";
