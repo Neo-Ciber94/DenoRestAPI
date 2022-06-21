@@ -95,17 +95,14 @@ async function renderRouteToHtml(
     routeData = data;
   }
 
-  console.log({ params, query });
-
   // prettier-ignore
   const app = Nano.renderSSR(<JsxComponent data={routeData} />, { pathname });
   const hydrateScriptPath = getHydrateFileName(viewRoute);
   const { body, head, footer, attributes } = Helmet.SSR(app);
 
   const q = JSON.stringify({ params, query });
-  console.log({ q });
 
-  return `
+  const returnHTML = `
   <!DOCTYPE html>
   <html ${attributes.html.toString()}>
     <head>
@@ -114,14 +111,16 @@ async function renderRouteToHtml(
       ${head.join("\n")}
     </head>
     <body ${attributes.body.toString()}>
-      <div id='root'>
+      <div id="root">
         ${body}
       </div>
       ${footer.join("\n")}
       <script id="${ROUTE_PARAMS}" type="application/json">${q}</script>
-      <script src="${BUNDLE_ADDRESS}/${hydrateScriptPath}.bundle.js" />
+      <script src="${BUNDLE_ADDRESS}/${hydrateScriptPath}.bundle.js"></script>
     </body>
   </html`;
+
+  return returnHTML;
 }
 
 async function generateHydrateScript(view: ViewRoute): Promise<string> {
