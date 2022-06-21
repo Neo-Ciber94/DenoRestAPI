@@ -1,5 +1,0 @@
-
-    import { hydrate } from "nano_jsx";
-    import Component from "../../pages/posts/[id]/comments/[commentId].tsx";
-
-    hydrate(Component, document.getElementById("root"));
